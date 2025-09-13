@@ -2,7 +2,7 @@
 import './globals.css'   // index.css 相当
 import React from 'react'
 import { ReactNode } from 'react'
-import App from './page'   // もし App コンポーネントを使う場合
+
 
 export const metadata = {
   title: 'My App',
