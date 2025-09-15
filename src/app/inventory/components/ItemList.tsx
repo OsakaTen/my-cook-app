@@ -1,5 +1,5 @@
 import React from "react";
-import { Item } from "../page";
+import { Item } from ".../page";
 
 interface ItemListProps {
   items: Item[];

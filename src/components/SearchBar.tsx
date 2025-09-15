@@ -1,82 +1,80 @@
-import React from "react";
+import { evalManifestWithRetries } from 'next/dist/server/load-components';
+import React, { useState } from 'react';
 
-// Spot型に views を追加
-type Spot = {
-  title: string;
-  description: string;
-  image: string;
-  views: number;
-};
+const SearchBar: React.FC = () => {
+  // どのボタンが選択されているかを管理
+  const [selectedIngredients, setSelectedIngredients] = useState<string[]>([]);
+  // 検索欄に表示されている文字列
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
-// データ（views = 人気度）
-const spots: Spot[] = [
-  {
-    title: "肉じゃが",
-    description:
-      "おいしい",
-    image: "4224510_s.jpg",
-    views: 200,
-  },
-  {
-    title: "オムライス",
-    description:
-      "おいしい",
-    image: "32574037_s.jpg",
-    views: 350,
-  },
-  {
-    title: "回鍋肉",
-    description:
-      "おいしい",
-    image: "111_銀山温泉5.jpg",
-    views: 250,
-  },
-  {
-    title: "豚の生姜焼き",
-    description:
-      "おいしい",
-    image: "dogoonsen.jpg",
-    views: 500,
-  },
-  {
-    title: "ピーマンの肉詰め",
-    description:
-      "おいしい",
-    image: "dogoonsen.jpg",
-    views: 500,
-  },
-];
+  const ingredients: string[] = [
+    '牛肉', '豚肉', '鶏肉', '玉ねぎ', 'じゃがいも',
+    'にんじん', 'トマト', '卵', '牛乳'
+  ]
 
-// 人気順に並べて上位4件だけ取り出す
-const topSpots = [...spots]
-  .sort((a, b) => b.views - a.views)
-  .slice(0, 4);
+  const handleIngredientClick = (ingredient: string) => {
+    const currentItems = searchQuery
+      .split(" ")
+      .map(item => item.trim())
+      .filter(item => item.length > 0);
 
-// SpotCardコンポーネント
-const SpotCard: React.FC<Spot> = ({ title, description, image }) => (
-  <section className="spot-card  border rounded-lg shadow-md overflow-hidden ">
-    <div className="spot-image">
-      <img src={image} alt={title} className="w-full h-50 object-cover" />
-    </div>
-    <div className="spot-info p-4">
-      <h2 className="text-sm font-bold">{title}</h2>
-      <p className="text-sm text-gray-600 mb-2">{description}</p>
-      <a href="#" className="text-blue-500 hover:underline">
-        詳しく見る
-      </a>
-    </div>
-  </section>
-);
+    let newItems: string[];
 
-// メインページ
-const MainPage: React.FC = () => {
+    if (currentItems.includes(ingredient)) {
+      newItems = currentItems.filter(item => item !== ingredient);
+    } else {
+      newItems = [...currentItems, ingredient];
+    }
+
+    const newSelectedIngredients = ingredients.filter(ing => newItems.includes(ing));
+    setSelectedIngredients(newSelectedIngredients);
+
+    setSearchQuery(newItems.join(" "));
+  }
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+    setSearchQuery(newValue);
+
+    const currentItems = newValue
+      .split(' ')
+      .map(item => item.trim())
+      .filter(item => item.length > 0);
+
+    const newSelectedIngredients = ingredients.filter(ing => currentItems.includes(ing));
+    setSelectedIngredients(newSelectedIngredients);
+  }
+
   return (
-    <main className="grid grid-cols-4 gap-8 w-full px-8 mt-8">
-      {topSpots.map((spot) => (
-        <SpotCard key={spot.title} {...spot} />
-      ))}
-    </main>
+    <div className="flex items-center flex-col mb-12">
+      <h2 className="text-2xl font-bold text-gray-800 mb-8 text-center">どんな料理をお探しですか</h2>
+      <section>
+        <div className="flex flex-wrap justify-center gap-4">
+          {ingredients.map((ingredient) => (
+            <button
+              key={ingredient}
+              onClick={() => handleIngredientClick(ingredient)}
+              className={`px-5 py-2 rounded-full border 
+                ${selectedIngredients.includes(ingredient)
+                  ? 'bg-blue-500 text-white border-blue-500 hover:bg-blue-600'
+                  : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'
+                }`}
+            >
+              {ingredient}
+            </button>
+          ))}
+        </div>
+      </section>
+      < input
+        type="text"
+        value={searchQuery}
+        onChange={handleInputChange}
+        className="mt-5 min-w-[700px] "
+        placeholder="食材を入れてみよう"
+      />
+    </div>
   );
-};
+}
 
-export default MainPage;
+export default SearchBar;
+

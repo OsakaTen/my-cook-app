@@ -1,6 +1,7 @@
 "use client"; // Client Componentとして明示
 
 import { useState } from "react";
+import Header from "@/components/Header";
 
 export default function InventoryPage() {
   // フォームの入力状態を管理（デモ用）
@@ -30,7 +31,8 @@ export default function InventoryPage() {
 
 
   return (
-    <div className=" bg-white/90 rounded-2xl shadow-lg border border-gray-100/20 backdrop-blur-md">
+    <div>
+      <Header />
       <main className="p-10 space-y-8">
         {/* 入力セクション */}
         <section className="bg-white/80 p-8 rounded-xl border border-gray-100/50 shadow-sm">
@@ -39,7 +41,7 @@ export default function InventoryPage() {
           </h2>
           <form className="space-y-6 flex flex-col" onSubmit={handleSubmit}>
             <div className="grid grid-cols-1 sm:grid-cols-4 gap-5">
-              <div className="flex flex-col">
+              <div className="form-group">
                 <label
                   htmlFor="ingredient"
                   className="text-gray-600 font-medium text-sm mb-2"
@@ -55,7 +57,7 @@ export default function InventoryPage() {
                   onChange={handleInputChange}
                 />
               </div>
-              <div className="flex flex-col">
+              <div className="form-group">
                 <label
                   htmlFor="quantity"
                   className="text-gray-600 font-medium text-sm mb-2"
@@ -73,7 +75,7 @@ export default function InventoryPage() {
                   onChange={handleInputChange}
                 />
               </div>
-              <div className="flex flex-col">
+              <div className="form-group">
                 <label
                   htmlFor="category"
                   className="text-gray-600 font-medium text-sm mb-2"
@@ -94,7 +96,7 @@ export default function InventoryPage() {
                   <option value="その他">📦 その他</option>
                 </select>
               </div>
-              <div className="flex flex-col">
+              <div className="form-group">
                 <label
                   htmlFor="expiry"
                   className="text-gray-600 font-medium text-sm mb-2"
@@ -110,12 +112,13 @@ export default function InventoryPage() {
                 />
               </div>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 mb-6">
-              <div className="form-group flex flex-col">
+            <div className="grid [grid-template-columns:repeat(auto-fit,minmax(180px,1fr))] gap-5 mb-6">
+              <div className="form-group">
                 <label htmlFor="description" className="text-gray-600 font-medium text-sm mb-2">説明</label>
                 <input type="text" id="description" placeholder="例: スーパーでの買い物" />
               </div>
-              <div className="">
+              <div className="form-group">
+                <label>&nbsp;</label>
                 <button
                   type="submit"
                   className="">
