@@ -8,10 +8,10 @@ body {
   line-height: 1.5;
 }
 
-header {
+/* header {
   background-color: rgba(240, 238, 238, 0.923);
   backdrop-filter: blur(10px);
-}
+} */
 
 
 form {
@@ -52,10 +52,26 @@ select {
   background-color: white;
   padding: 1.5rem;
   border-radius: 0.5rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  /* box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
   align-items: center;
   transition: box-shadow 0.3s ease;
+}
+
+.recip-card{
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease;
+}
+
+.button-style {
+  margin: 8rem 0 0 8.75rem;  /* mt-15 ml-35 を一行に */
+  padding: 0.5rem 1rem;         /* py-2 px-4 を一行に */
+  cursor: pointer;
+  font: 600 1.5rem/2rem sans-serif;  /* font-semibold text-2xl を一行に */
+  border-radius: 0.5rem;
+  background: #f87171;
+  color: white;
 }
 

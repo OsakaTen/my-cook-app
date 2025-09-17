@@ -16,14 +16,15 @@ const Header: React.FC = () => {
   ]
 
   return (
-    <header className="flex justify-around  py-6 px-8  fixed top-0 left-0 w-full z-50 bg-white shadow-md">
-      <h1 className="font-bold text-gray-800 text-3xl">My Fridge</h1>
+    <header className="flex justify-around  py-6 px-8  mb-30 fixed top-0 left-0 w-full z-50 bg-[#FAFAFA] shadow-md">
+      {/* <h1 className="font-bold text-gray-800 text-3xl">My Fridge</h1> */}
+      <Link href="/" className="font-bold text-gray-800 text-3xl">My Fridge</Link>
       <ul className="flex flex-row gap-8 text-xl">
         {navItems.map((item: NavItem) => (
           <li key={item.title}>
             <Link
               href={item.href}
-              className="inline-block text-gray-700 hover:text-blue-500 transition">
+              className="inline-block text-gray-700 hover:text-blue-500 hover:underline transition-colors">
               {item.title}
             </Link>
           </li>

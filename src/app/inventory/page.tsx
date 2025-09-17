@@ -2,179 +2,102 @@
 
 import { useState } from "react";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import AddFoodForm from "./components/AddForm";
+import FoodTable from "./components/FoodTable";
+import { FoodCategory, FoodItem } from "./types"
+
+
 
 export default function InventoryPage() {
-  // フォームの入力状態を管理（デモ用）
-  const [formData, setFormData] = useState({
-    ingredient: "",
-    quantity: 0,
-    category: "野菜",
-    expiry: "",
+
+  const [items, setItems] = useState<FoodItem[]>([]);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<FoodCategory>('すべて');
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const categories: FoodCategory[] = ['すべて', '果物', '野菜', '乳製品', '肉類'];
+
+  const handleAddItem = (newItem: Omit<FoodItem, 'id'>) => {
+    const newId = items.length > 0 ? Math.max(...items.map(item => item.id)) + 1 : 1;
+    setItems([...items, { ...newItem, id: newId }]);
+    setShowAddForm(false);
+  }
+
+  const handleEditItem = (id: number, updatedItem: Omit<FoodItem, 'id'>) => {
+    setItems(items.map(item => item.id === id ? { ...updatedItem, id } : item));
+  }
+
+  const handleDeleteItem = (id: number) => {
+    setItems(items.filter(item => item.id !== id));
+  }
+
+  const filteredItems = items.filter(item => {
+    const matchesCategory = selectedCategory === 'すべて' || item.category === selectedCategory;
+    const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesCategory && matchesSearch;
   });
-
-  // フォーム送信ハンドラ
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("フォーム送信データ:", formData);
-    // ここでバックエンドAPI（例: Node.js/Express）にデータを送信する処理を追加可能
-    // 例: fetch('/api/ingredients', { method: 'POST', body: JSON.stringify(formData) })
-  };
-
-  // 入力変更ハンドラ
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { id, value } = e.target;
-    setFormData((prev) => ({ ...prev, [id]: value }));
-  };
-
-
 
   return (
     <div>
       <Header />
-      <main className="p-10 space-y-8">
-        {/* 入力セクション */}
-        <section className="bg-white/80 p-8 rounded-xl border border-gray-100/50 shadow-sm">
-          <h2 className="text-4xl font-normal mb-10 text-center">
-            📝 新しい食材を追加
-          </h2>
-          <form className="space-y-6 flex flex-col" onSubmit={handleSubmit}>
-            <div className="grid grid-cols-1 sm:grid-cols-4 gap-5">
-              <div className="form-group">
-                <label
-                  htmlFor="ingredient"
-                  className="text-gray-600 font-medium text-sm mb-2"
-                >
-                  食材名
-                </label>
-                <input
-                  id="ingredient"
-                  type="text"
-                  placeholder="例: トマト"
-                  required
-                  value={formData.ingredient}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className="form-group">
-                <label
-                  htmlFor="quantity"
-                  className="text-gray-600 font-medium text-sm mb-2"
-                >
-                  数量
-                </label>
-                <input
-                  id="quantity"
-                  type="number"
-                  min="0"
-                  step="1"
-                  placeholder="例: 2"
-                  required
-                  value={formData.quantity}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className="form-group">
-                <label
-                  htmlFor="category"
-                  className="text-gray-600 font-medium text-sm mb-2"
-                >
-                  カテゴリー
-                </label>
-                <select
-                  id="category"
-                  className="p-4 border border-gray-200 "
-                  required
-                  value={formData.category}
-                  onChange={handleInputChange}
-                >
-                  <option value="野菜">🥕 野菜</option>
-                  <option value="肉">🍖 肉</option>
-                  <option value="魚">🐟 魚</option>
-                  <option value="乳製品">🧀 乳製品</option>
-                  <option value="その他">📦 その他</option>
-                </select>
-              </div>
-              <div className="form-group">
-                <label
-                  htmlFor="expiry"
-                  className="text-gray-600 font-medium text-sm mb-2"
-                >
-                  賞味期限
-                </label>
-                <input
-                  id="expiry"
-                  type="date"
-                  required
-                  value={formData.expiry}
-                  onChange={handleInputChange}
-                />
-              </div>
+      <main className="flex-1 px-10 py-8 my-22">
+        <div className="max-w-6xl mx-auto">
+          <div className="mb-8">
+            <h1 className="text-4xl font-bold text-slate-800">冷蔵庫の在庫</h1>
+          </div>
+          {/* Search Box */}
+          <div className="mb-6">
+            <div className="flex items-center gap-7 mb-8">
+              <input
+                className=" min-w-[700px] rounded-md pl-12 pr-4 py-3 text-slate-800 focus:outline-none  placeholder:text-slate-400"
+                placeholder="食材を検索"
+                type="text"
+              />
+              <button
+                onClick={() => setShowAddForm(!showAddForm)}
+                className="flex items-center justify-center gap-2  rounded-md h-13 px-6 text-white text-base font-semibold bg-[#29C77C] hover:bg-[#24B36F] transition-colors" >
+                <span>+</span>
+                <span className="truncate">食材を追加</span>
+              </button>
             </div>
-            <div className="grid [grid-template-columns:repeat(auto-fit,minmax(180px,1fr))] gap-5 mb-6">
-              <div className="form-group">
-                <label htmlFor="description" className="text-gray-600 font-medium text-sm mb-2">説明</label>
-                <input type="text" id="description" placeholder="例: スーパーでの買い物" />
-              </div>
-              <div className="form-group">
-                <label>&nbsp;</label>
-                <button
-                  type="submit"
-                  className="">
-                  食材を追加
-                </button>
-              </div>
-            </div>
-          </form>
-        </section>
+          </div>
 
-        {/* フィルターセクション */}
-        <section className="flex gap-3 flex-wrap">
-          <button className="bg-white/90 px-6 py-3 rounded-full border border-gray-200 text-gray-600 font-medium hover:border-red-500 hover:-translate-y-0.5 hover:shadow-md transition duration-300">
-            📊 すべて
-          </button>
-          <button className="bg-white/90 px-6 py-3 rounded-full border border-gray-200 text-gray-600 font-medium hover:border-red-500 hover:-translate-y-0.5 hover:shadow-md transition duration-300">
-            🥕 野菜
-          </button>
-          <button className="bg-white/90 px-6 py-3 rounded-full border border-gray-200 text-gray-600 font-medium hover:border-red-500 hover:-translate-y-0.5 hover:shadow-md transition duration-300">
-            🍖 肉
-          </button>
-          <select className="">
-            <option value="all">すべての月</option>
-          </select>
-        </section>
+          {showAddForm &&
+            (<AddFoodForm
+              onAdd={handleAddItem}
+              onCancel={() => setShowAddForm(false)}
+            />
+            )}
 
-        {/* 集計セクション */}
-        <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="summary-card bg-white/90 p-8 rounded-xl border border-gray-100/50 shadow-sm hover:-translate-y-1 hover:shadow-md transition duration-300">
-            <h3 className="text-gray-600 text-base font-medium mb-4">食材数</h3>
-            <div className="text-3xl font-light text-green-500">0</div>
+          {/* Filter Buttons */}
+          <div className="flex gap-3 mb-8">
+            {categories.map(category => (
+              <button
+                key={category}
+                onClick={() => setSelectedCategory(category)}
+                className={`px-4 py-2 rounded-md text-sm border border-slate-200 transition-colors
+                ${selectedCategory === category
+                    ? 'text-white bg-[#29C77C]'
+                    : 'bg-white text-slate-600 hover:bg-green-100 hover:text-green-700 hover:border-green-200'
+                  }`}
+              >
+                {category}
+              </button>
+            ))}
           </div>
-          <div className="summary-card bg-white/90 p-8 rounded-xl border border-gray-100/50 shadow-sm hover:-translate-y-1 hover:shadow-md transition duration-300">
-            <h3 className="text-gray-600 text-base font-medium mb-4">
-              期限切れ間近
-            </h3>
-            <div className="text-3xl font-light text-red-500">0</div>
-          </div>
-          <div className="summary-card bg-white/90 p-8 rounded-xl border border-gray-100/50 shadow-sm hover:-translate-y-1 hover:shadow-md transition duration-300">
-            <h3 className="text-gray-600 text-base font-medium mb-4">
-              レシピ提案
-            </h3>
-            <div className="text-3xl font-light text-blue-500">0</div>
-          </div>
-        </section>
-
-        {/* 記録一覧セクション */}
-        <section className="bg-white/90 p-8 rounded-xl border border-gray-100/50 shadow-sm">
-          <h2 className="text-2xl font-normal mb-6 tracking-tight">
-            📋 食材一覧
-          </h2>
-          <div className="records-list max-h-[500px] overflow-y-auto text-gray-500">
-            まだ食材が登録されていません。
-          </div>
-        </section>
+          {/* Table */}
+          <FoodTable
+            items={filteredItems}
+            onEdit={handleEditItem}
+            onDelete={handleDeleteItem}
+          />
+        </div>
       </main>
+      <Footer />
     </div>
   );
+
+
 }
+

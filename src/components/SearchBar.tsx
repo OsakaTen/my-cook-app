@@ -1,4 +1,3 @@
-import { evalManifestWithRetries } from 'next/dist/server/load-components';
 import React, { useState } from 'react';
 
 const SearchBar: React.FC = () => {
@@ -69,7 +68,7 @@ const SearchBar: React.FC = () => {
         type="text"
         value={searchQuery}
         onChange={handleInputChange}
-        className="mt-5 min-w-[700px] "
+        className="mt-5 min-w-[700px] focus:outline-none"
         placeholder="食材を入れてみよう"
       />
     </div>
