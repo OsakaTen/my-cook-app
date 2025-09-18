@@ -29,15 +29,6 @@ const App: React.FC = () => {
     localStorage.setItem("items", JSON.stringify(items));
   }, [items]);
 
-  const addItem = (name: string): void => {
-    setItems([...items, { id: Date.now(), name }]);
-  };
-
-  const deleteItem = (id: number): void => {
-    setItems(items.filter((item) => item.id !== id));
-  };
-
-
   interface StepCardProps {
     icon: string;
     title: string;

@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import AddFoodForm from "./components/AddForm";
 import FoodTable from "./components/FoodTable";
+import Footer from "@/components/Footer";
 import { FoodCategory, FoodItem } from "./types"
 
 
@@ -53,6 +53,7 @@ export default function InventoryPage() {
                 className=" min-w-[700px] rounded-md pl-12 pr-4 py-3 text-slate-800 focus:outline-none  placeholder:text-slate-400"
                 placeholder="食材を検索"
                 type="text"
+                onChange={(e) => setSearchTerm(e.target.value)}
               />
               <button
                 onClick={() => setShowAddForm(!showAddForm)}
