@@ -1,5 +1,8 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+Next.js + React + TypeScript で作成した冷蔵庫・レシピ管理アプリです
+https://my-cook-app-nine.vercel.app/
+
 ## Getting Started
 
 First, run the development server:
