@@ -144,35 +144,35 @@ const App: React.FC = () => {
           <h2 className="text-2xl font-bold text-gray-800 mb-8 text-center">今日のピックアップレシピ</h2>
           <div className="grid md:grid-cols-4 gap-6">
             <div className="recip-card  rounded-lg">
-              <img alt="彩り野菜のラタトゥイユ" className="w-full h-40 object-cover"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuA0blcGcygs7cfDXAYMIeYC-1qYReRF1enP03_BIltQ9KDLjNsK8EWTwP-2qztwRf5jUfHbxpsSJO0O6FgZjFuPhi69e_YpWwhBLr_STSIMIj7TYxwFZwPQZ24by_-keb66naTXfFJ6-x-HV4tjiIE9tlHGY0qK04cfWwbx7ifXYDqgMAhCM7wbm_OksyZjDEsaxO3QTEb3pmPq3tYRyVwMDDPS6pv7p-T1-ODw7vLYJchrnT7YMfn_ikkV9EfpPn21kM4Yv1SXMf4" />
+              <img alt="料理名" className="w-full h-40 object-cover"
+                src="" />
               <div className="p-4">
-                <h3 className="font-bold">彩り野菜のラタトゥイユ</h3>
-                <p className="text-sm text-gray-600 mt-1">夏野菜をたっぷり使った、栄養満点の一品。</p>
+                <h3 className="font-bold">料理名</h3>
+                <p className="text-sm text-gray-600 mt-1">おいしい</p>
               </div>
             </div>
             <div className="recip-card rounded-lg">
-              <img alt="鶏肉のハーブグリル" className="w-full h-40 object-cover"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCuI6GbQ0IldU2OTQo-9Rmi7WHM2eI3z6Ofvlc4b_bJJTBOdzNlIY2oQsqBbXqgxkkGQHqNzztBdcoJOLXle5NDDgLdxdBR4bSpK7Mtvsl9s_yaVPta72VmQrfCzUtVLwrFPkotDnVYDtLCy0MVsJIElWmducDGRYmx0fiAwj-hKSvI4PlWq1BWu3IKJFVPDEr84zSpGazYZH1jW1vqYGQsOW3fJUiiTptr4x5d6VwUL235zSsYWEiRbesg5kuxq1QiS60NtwvdxDs" />
+              <img alt="料理名" className="w-full h-40 object-cover"
+                src="" />
               <div className="p-4">
-                <h3 className="font-bold">鶏肉のハーブグリル</h3>
-                <p className="text-sm text-gray-600 mt-1">シンプルながら風味豊かな、ジューシーなグリルチキン。</p>
+                <h3 className="font-bold">料理名</h3>
+                <p className="text-sm text-gray-600 mt-1">おいしい</p>
               </div>
             </div>
             <div className="recip-card rounded-lg ">
-              <img alt="シーフードパエリア" className="w-full h-40 object-cover"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAtuWMw75suYqfFceSRSRjSpJW09SjDLDjbLAXBz8bb7GkD4uDblUZx7jhVB5gPKgp3v3EbQgA82MsRRPauGo7yJNmB0ULSdIKMeWIsPVceR2x7Z6gy8UdfOIkf_MuB-cpMtrzZknwkq3PuS_UiTqCYpWV7iFA-khD_xCnChX26z0uSMiAj4Xj3hu1JT8MQJ1nhmBG9yHlNHTa_qKRM5Hdijzl5QKO_QaiUxSzjPKHoT9HAr7O4zhUYwhBcQeyctolePQCAJptoHbc" />
+              <img alt="料理名" className="w-full h-40 object-cover"
+                src="" />
               <div className="p-4">
-                <h3 className="font-bold">シーフードパエリア</h3>
-                <p className="text-sm text-gray-600 mt-1">魚介の旨味が凝縮された、華やかな一皿。</p>
+                <h3 className="font-bold">料理名</h3>
+                <p className="text-sm text-gray-600 mt-1">おいしい</p>
               </div>
             </div>
             <div className="recip-card rounded-lg">
-              <img alt="濃厚カルボナーラ" className="w-full h-40 object-cover"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDDXIFTmZcFy9Q8tdrUHuQoKN023GbHJuc_FzSxgaesVfvt87f6xBMu0nw4niMZioLuAin1KtqBlcFlPanNBAjVMSGitBxTYA2JVIw_Wp7zCObCVPq1uzJwxOlbfgMdxRnh-wg70rKJilEuL5sWMmUVaIE5CdRwJU95Rf7Tbu-KAOXfERGiQYvYciTdEH_v1ORIFXLCRU9XN-2IhGm_e0W99935w0OGuzX8QdmnX8qoGBUX_eNsM6bl8hrdynzG4XttiGGwLot67pw" />
+              <img alt="料理名" className="w-full h-40 object-cover"
+                src="" />
               <div className="p-4">
-                <h3 className="font-bold">濃厚カルボナーラ</h3>
-                <p className="text-sm text-gray-600 mt-1">卵とチーズだけで作る、本格的な味わい。</p>
+                <h3 className="font-bold">料理名</h3>
+                <p className="text-sm text-gray-600 mt-1">おいしい</p>
               </div>
             </div>
           </div>

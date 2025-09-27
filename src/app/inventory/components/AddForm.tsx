@@ -57,7 +57,7 @@ const AddForm: React.FC<AddFoodFormProps> = ({ onAdd, onCancel }) => {
           className="border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
           onChange={(e) => setFormData({ ...formData, expiryDate: e.target.value })}
         />
-        <select className="border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+        <select className="border border-slate-300 rounded-md"
           value={formData.category}
           onChange={(e) => setFormData({ ...formData, category: e.target.value as FoodCategory })}
         >

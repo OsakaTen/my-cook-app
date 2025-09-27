@@ -28,7 +28,7 @@ input {
 }
 
 select {
-  padding: 0.5rem;
+  padding: .5rem;
   border-radius: .5rem;
   font-size: 1.5rem;
   color: #c4c8cf;
