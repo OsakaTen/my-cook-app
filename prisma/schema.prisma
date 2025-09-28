@@ -1,0 +1,69 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// 食材カテゴリ（列挙型）
+enum FoodCategory {
+  野菜
+  果物
+  肉
+  魚
+  乳製品
+  飲料
+  調味料
+  その他
+}
+
+// 食材の状態（列挙型）
+enum FoodStatus {
+  新鮮
+  まもなく期限切れ
+  期限切れ
+}
+
+model User {
+  id        Int        @id @default(autoincrement())
+  name      String
+  email     String     @unique
+  foodItems FoodItem[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+// 冷蔵庫
+model Fridge {
+  id        Int        @id @default(autoincrement())
+  name      String
+  foodItems FoodItem[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+// 食材テーブル
+model FoodItem {
+  id         Int          @id @default(autoincrement())
+  name       String
+  quantity   String        // "2個" "500g" など
+  expiryDate DateTime
+  category   FoodCategory
+  status     FoodStatus
+  fridgeId   Int? 
+  fridge     Fridge?       @relation(fields: [fridgeId], references: [id])
+  userId     Int?
+  user       User?         @relation(fields: [userId], references: [id])
+  tags       String[]      // PrismaはString[]をサポート（PostgreSQLのみ）
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+}
