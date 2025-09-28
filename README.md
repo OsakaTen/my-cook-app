@@ -1,39 +1,60 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
-
+冷蔵庫・レシピ提案アプリ 🍳
+現在作成中なので下記は完成予定の機能です。
 Next.js + React + TypeScript で作成した冷蔵庫・レシピ管理アプリです
 https://my-cook-app-nine.vercel.app/
 
-## Getting Started
+料理をもっと楽しく、もっと効率的に。あなたの冷蔵庫の食材から最適なレシピを提案し、多種多様なコミュニティで新しい発見を共有できるアプリです。
 
-First, run the development server:
+🌟 主な機能
+📱 冷蔵庫管理・レシピ提案
+食材在庫管理: 冷蔵庫にある食材をアプリで簡単に管理
+スマートレシピ提案: 在庫食材を基に最適なレシピを自動提案
+レシピ検索: 豊富なレシピデータベースから料理を探索
+足りない食材表示: レシピに必要な材料のうち、不足している食材を明確に表示
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+👥 コミュニティ機能
+Publicグループ: 誰でも参加可能なオープンコミュニティ
+Privateグループ: 招待制の限定コミュニティ
+献立投稿: 日々の料理を写真付きで投稿・共有
+お気に入り機能: 気に入った料理やレシピを保存
+いいね機能: コミュニティメンバーの投稿に反応
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+🎯 アプリの特徴
+効率的な料理計画
+冷蔵庫の食材を無駄なく活用
+買い物前に必要な食材を事前に確認
+栄養バランスを考慮したレシピ提案
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+コミュニティでの学び
+同じ目標を持つユーザーとの交流
+料理のコツやアレンジ方法を共有
+季節の料理やトレンドレシピの発見
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+🚀 使い方
+1. 食材管理
+アプリを開き、冷蔵庫タブを選択
+現在の食材を追加・更新
+消費期限や数量も一緒に管理
 
-## Learn More
+2. レシピ提案を受ける
+ホーム画面で「レシピ提案」をタップ
+在庫食材から作れる料理が表示される
+気に入ったレシピを選択して詳細を確認
 
-To learn more about Next.js, take a look at the following resources:
+3. レシピを検索
+検索タブで料理名や材料で検索
+足りない食材がハイライトされて表示
+お気に入りに追加して後で参照
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+4. コミュニティに参加
+グループタブでパブリック/プライベートグループを検索
+興味のあるコミュニティに参加申請
+日々の料理を投稿して交流開始
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+主要機能
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+ユーザー認証システム
+画像アップロード機能
+プッシュ通知
+レシピ検索エンジン
+コミュニティ管理システム
