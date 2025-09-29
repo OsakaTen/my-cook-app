@@ -21,7 +21,6 @@ enum FoodCategory {
   肉
   魚
   乳製品
-  飲料
   調味料
   その他
 }
@@ -37,7 +36,7 @@ model User {
   id        Int        @id @default(autoincrement())
   name      String
   email     String     @unique
-  foodItems FoodItem[]
+  fridges  Fridge[]
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
 }
@@ -46,6 +45,8 @@ model User {
 model Fridge {
   id        Int        @id @default(autoincrement())
   name      String
+  userId    Int
+  user      User       @relation(fields: [userId], references: [id])
   foodItems FoodItem[]
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
@@ -61,9 +62,6 @@ model FoodItem {
   status     FoodStatus
   fridgeId   Int? 
   fridge     Fridge?       @relation(fields: [fridgeId], references: [id])
-  userId     Int?
-  user       User?         @relation(fields: [userId], references: [id])
-  tags       String[]      // PrismaはString[]をサポート（PostgreSQLのみ）
   createdAt  DateTime      @default(now())
   updatedAt  DateTime      @updatedAt
 }

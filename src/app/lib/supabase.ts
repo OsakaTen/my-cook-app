@@ -57,5 +57,4 @@ export type FoodItem = {
   userId?: number | null;   // ユーザーID（拡張用）
   createdAt?: string;  // 登録日時
   updatedAt?: string;  // 更新日時
-  tags?: string[];     // タグ（例: "冷凍", "未開封"）
 };
