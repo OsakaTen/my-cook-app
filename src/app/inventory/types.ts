@@ -1,18 +1,20 @@
-// 食材の種類
-export type FoodCategory = 'すべて' | '果物' | '野菜' | '乳製品' | '肉類';
+// Prismaのenumに合わせる
+export type FoodCategory = '野菜' | '果物' | '肉' | '魚' | '乳製品' | '調味料' | 'その他' | 'すべて';
 
-// 食材アイテムの型定義
+export type FoodStatus = '新鮮' | 'まもなく期限切れ' | '期限切れ';
+
 export interface FoodItem {
   id: number;
   name: string;
   quantity: string;
   expiryDate: string;
   category: FoodCategory;
-  status: '新鮮' | 'まもなく期限切れ' | '期限切れ';
+  status: FoodStatus;
 }
 
 export interface AddFoodFormProps {
-  onAdd: (item: Omit<FoodItem, 'id'>) => void;
+  userId: number;
+  onAdd: () => void;
   onCancel: () => void;
 }
 
