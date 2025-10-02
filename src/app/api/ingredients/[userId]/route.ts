@@ -4,11 +4,13 @@ import { FoodCategory, FoodStatus } from "@prisma/client";
 
 export async function GET(
   request: Request,
-  { params }: { params: { userId: string } }
+  { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
+    const { userId } = await params; // ← paramsをawaitで取得
+
     const foodItems = await prisma.foodItem.findMany({
-      where: { userId: Number(params.userId) },
+      where: { userId: Number(userId) },
       orderBy: { createdAt: "desc" },
     });
 
@@ -24,10 +26,11 @@ export async function GET(
 
 export async function POST(
   request: Request,
-  { params }: { params: { userId: string } }
+  { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
     const body = await request.json();
+    const { userId } = await params; // ← paramsをawaitで取得
 
     console.log("受信データ:", body); // デバッグ
 
@@ -38,7 +41,7 @@ export async function POST(
         expiryDate: new Date(body.expiryDate),
         category: body.category as FoodCategory,
         status: body.status as FoodStatus,
-        userId: Number(params.userId),
+        userId: Number(userId),
       },
     });
 
