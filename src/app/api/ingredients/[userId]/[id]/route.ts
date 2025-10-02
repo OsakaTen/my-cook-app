@@ -8,10 +8,10 @@ export async function PUT(
 ) {
   try {
     const body = await request.json();
-    const { userId } = await params; // ← paramsをawaitで取得
+     const { userId, id } = await params; // ← paramsをawaitで取得
 
     const updated = await prisma.foodItem.updateMany({
-      where: { id: Number(params.id), userId: Number(params.userId) },
+      where: { id: Number(id), userId: Number(userId) },
       data: {
         name: body.name,
         quantity: body.quantity,
