@@ -9,8 +9,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
 
@@ -32,25 +32,96 @@ enum FoodStatus {
   期限切れ
 }
 
+// レシピ難易度
+enum RecipeDifficulty {
+  簡単
+  普通
+  難しい
+}
+
 model User {
-  id        Int        @id @default(autoincrement())
-  name      String
-  email     String     @unique
-  foodItems FoodItem[]
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+  id          Int              @id @default(autoincrement())
+  name        String
+  email       String           @unique
+  foodItems   FoodItem[]
+  viewHistory RecipeView[]
+  favorites   FavoriteRecipe[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
 }
 
 // 食材テーブル
 model FoodItem {
   id         Int          @id @default(autoincrement())
   name       String
-  quantity   String        // "2個" "500g" など
+  quantity   String // "2個" "500g" など
   expiryDate DateTime
   category   FoodCategory
   status     FoodStatus
   userId     Int
-  user       User         @relation(fields: [userId], references: [id])
-  createdAt  DateTime      @default(now())
-  updatedAt  DateTime      @updatedAt
+  user       User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+
+  @@index([userId])
+  @@index([expiryDate])
+}
+
+// レシピテーブル
+model Recipe {
+  id           Int                @id @default(autoincrement())
+  title        String
+  description  String
+  imageUrl     String?
+  cookingTime  Int
+  difficulty   RecipeDifficulty
+  servings     Int
+  instructions String             @db.Text
+  ingredients  RecipeIngredient[]
+  views        RecipeView[]
+  favorites    FavoriteRecipe[]
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+
+  @@index([title])
+}
+
+// レシピの材料
+model RecipeIngredient {
+  id         Int      @id @default(autoincrement())
+  recipeId   Int
+  recipe     Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  name       String // 材料名
+  quantity   String // "2個" "大さじ1" など
+  isOptional Boolean  @default(false) // 必須材料かどうか
+  createdAt  DateTime @default(now())
+
+  @@index([recipeId])
+  @@index([name])
+}
+
+// レシピ閲覧履歴
+model RecipeView {
+  id       Int      @id @default(autoincrement())
+  userId   Int
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recipeId Int
+  recipe   Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  viewedAt DateTime @default(now())
+
+  @@unique([userId, recipeId, viewedAt])
+  @@index([userId, viewedAt])
+}
+
+// お気に入りレシピ
+model FavoriteRecipe {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recipeId  Int
+  recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, recipeId])
+  @@index([userId])
 }

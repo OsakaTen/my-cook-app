@@ -6,6 +6,7 @@ import AddFoodForm from "./components/AddForm";
 import FoodTable from "./components/FoodTable";
 import Footer from "@/components/Footer";
 import { FoodCategory, FoodItem } from "./types"
+import { Plus } from 'lucide-react';
 
 
 
@@ -107,8 +108,8 @@ return (
                 onClick={() => setShowAddForm(!showAddForm)}
                 className="flex items-center justify-center gap-2 rounded-md h-13 px-6 text-white text-base font-semibold bg-[#29C77C] hover:bg-[#24B36F] transition-colors"
               >
-                <span>+</span>
-                <span className="truncate">食材を追加</span>
+                <Plus size={20} />
+                食材を追加
               </button>
             </div>
           </div>
