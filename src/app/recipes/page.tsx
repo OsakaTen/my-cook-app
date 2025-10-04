@@ -1,6 +1,7 @@
 "use client";
 
 import Header from "@/components/Header";
+import { DivideCircleIcon } from "lucide-react";
 import { useState } from "react";
 
 
@@ -17,26 +18,33 @@ interface FilterOption {
   isActive: boolean;
 }
 
-interface TabOption {
+type TabOption = {
   id: string;
   label: string;
-  isActive: boolean;
-}
+};
+
+
+// interface TabOption {
+//   id: string;
+//   label: string;
+//   isActive: boolean;
+// }
 
 const FreshPlateRecipes: React.FC = () => {
   const [filters, setFilters] = useState<FilterOption[]>([
+    { id: 'ingredients', label: '材料', isActive: false },
+    { id: 'dietary', label: '系統', isActive: false },
+    { id: 'difficulty', label: '難易度', isActive: false },
     { id: 'time', label: '調理時間', isActive: false },
-    { id: 'cuisine', label: 'Cuisine', isActive: false },
-    { id: 'difficulty', label: 'Difficulty', isActive: false },
-    { id: 'dietary', label: 'Dietary', isActive: false },
-    { id: 'ingredients', label: 'Ingredients', isActive: false },
   ]);
 
-  const [tabs] = useState<TabOption[]>([
-    { id: 'exact', label: 'Exact Match', isActive: false },
-    { id: 'partial', label: 'Partial Match', isActive: true },
-    { id: 'best-before', label: 'Best Before First', isActive: false },
-  ]);
+  const [activeTab, setActiveTab] = useState("partial");
+
+  const tabOptions: TabOption[] = [
+    { id: "exact", label: "完全一致" },
+    { id: "partial", label: "部分一致" },
+    { id: "best-before", label: "賞味期限が近い" },
+  ];
 
   const [searchTerm, setSearchTerm] = useState<string>('');
 
@@ -109,27 +117,9 @@ const FreshPlateRecipes: React.FC = () => {
     }
   ];
 
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
-    setSearchTerm(event.target.value);
-  };
-
-  const handleFilterClick = (filterId: string): void => {
-    setFilters(prevFilters => 
-      prevFilters.map(filter => 
-        filter.id === filterId 
-          ? { ...filter, isActive: !filter.isActive }
-          : filter
-      )
-    );
-  };
-
-  const handleNotificationClick = (): void => {
-    console.log('Notification clicked');
-  };
-
   const RecipeCard: React.FC<{ recipe: Recipe }> = ({ recipe }) => (
     <div className="group cursor-pointer">
-      <div 
+      <div
         className="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-lg mb-2 transition-transform duration-300 group-hover:scale-105"
         style={{ backgroundImage: `url("${recipe.imageUrl}")` }}
       />
@@ -144,7 +134,7 @@ const FreshPlateRecipes: React.FC = () => {
 
   const RecipeSection: React.FC<{ title: string; recipes: Recipe[] }> = ({ title, recipes }) => (
     <section className="mb-12">
-      <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">{title}</h3>
+      <h3 className="text-xl font-bold text-gray-900 mb-4">{title}</h3>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
         {recipes.map(recipe => (
           <RecipeCard key={recipe.id} recipe={recipe} />
@@ -154,31 +144,29 @@ const FreshPlateRecipes: React.FC = () => {
   );
 
   return (
-    <div className="bg-white font-sans text-gray-900">
+    <div>
       <Header />
-
       {/* Main Content */}
-      <main className="flex-1 px-10 mt-20 sm:px-16 md:px-24 lg:px-40 py-8">
-        <div className="max-w-7xl mx-auto">
-          <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
-            Recipes for Your Fridge
+      <main className="px-10 mt-20 sm:px-16 md:px-24 lg:px-40 py-8">
+        <div>
+          <h2 className="text-4xl font-bold text-gray-900 mb-4">
+            おすすめ
           </h2>
-          
+
           {/* Tabs */}
-          <div className="border-b border-green-500/20 dark:border-green-500/30 mb-6">
-            <nav className="flex -mb-px space-x-8">
-              {tabs.map(tab => (
-                <a
+          <div className="border-b border-green-500/20 mb-6">
+            <nav className="flex gap-8">
+              {tabOptions.map(tab => (
+                <button
                   key={tab.id}
-                  className={`py-4 px-1 inline-flex items-center gap-2 text-sm font-medium border-b-2 ${
-                    tab.isActive
+                  className={`py-4 px-1 inline-flex items-center gap-2 text-sm font-medium border-b-2 ${activeTab === tab.id
                       ? 'text-green-500 border-green-500'
-                      : 'text-gray-500 hover:text-green-500 dark:text-gray-400 dark:hover:text-green-500 border-transparent'
-                  }`}
-                  href="#"
+                      : 'text-gray-500 hover:text-green-500 border-transparent'
+                    }`}
+                  onClick={() => setActiveTab(tab.id)} // ←クリックで state 更新
                 >
                   {tab.label}
-                </a>
+                </button>
               ))}
             </nav>
           </div>
@@ -190,12 +178,10 @@ const FreshPlateRecipes: React.FC = () => {
               {filters.map(filter => (
                 <button
                   key={filter.id}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    filter.isActive
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${filter.isActive
                       ? 'bg-green-500/20 dark:bg-green-500/30 text-green-700 dark:text-green-300'
                       : 'bg-gray-800/5 dark:bg-gray-100/5 text-gray-700 dark:text-gray-300 hover:bg-green-500/20 dark:hover:bg-green-500/30'
-                  }`}
-                  onClick={() => handleFilterClick(filter.id)}
+                    }`}
                 >
                   <span>{filter.label}</span>
                 </button>
@@ -205,9 +191,9 @@ const FreshPlateRecipes: React.FC = () => {
 
           {/* Recipe Sections */}
           <div className="space-y-12">
-            <RecipeSection title="Recommended Recipes" recipes={recommendedRecipes} />
-            <RecipeSection title="Recently Viewed" recipes={recentlyViewedRecipes} />
-            <RecipeSection title="Favorites" recipes={favoriteRecipes} />
+            <RecipeSection title="冷蔵庫から作れる料理" recipes={recommendedRecipes} />
+            <RecipeSection title="最近確認した料理" recipes={recentlyViewedRecipes} />
+            <RecipeSection title="お気に入り" recipes={favoriteRecipes} />
           </div>
         </div>
       </main>
