@@ -14,12 +14,6 @@ interface Recipe {
   imageUrl: string;
 }
 
-interface FilterOption {
-  id: string;
-  label: string;
-  isActive: boolean;
-}
-
 type TabOption = {
   id: string;
   label: string;
