@@ -40,8 +40,8 @@ enum RecipeDifficulty {
 }
 
 model User {
-  id          Int              @id @default(autoincrement())
-  name        String
+  id          String             @id @default(uuid())
+  name        String?
   email       String           @unique
   foodItems   FoodItem[]
   viewHistory RecipeView[]
@@ -58,7 +58,7 @@ model FoodItem {
   expiryDate DateTime
   category   FoodCategory
   status     FoodStatus
-  userId     Int
+  userId     String
   user       User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt  DateTime     @default(now())
   updatedAt  DateTime     @updatedAt
@@ -103,7 +103,7 @@ model RecipeIngredient {
 // レシピ閲覧履歴
 model RecipeView {
   id       Int      @id @default(autoincrement())
-  userId   Int
+  userId   String
   user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   recipeId Int
   recipe   Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
@@ -116,7 +116,7 @@ model RecipeView {
 // お気に入りレシピ
 model FavoriteRecipe {
   id        Int      @id @default(autoincrement())
-  userId    Int
+  userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   recipeId  Int
   recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)

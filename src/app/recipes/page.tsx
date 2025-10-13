@@ -3,7 +3,8 @@
 import Header from "@/components/Header";
 import Filter from "./components/FilterSection";
 import Footer from "@/components/Footer";
-import { DivideCircleIcon } from "lucide-react";
+import Image from "next/image";
+import { Heart } from "lucide-react";
 import { useState } from "react";
 
 
@@ -27,6 +28,15 @@ const FreshPlateRecipes: React.FC = () => {
     { id: "partial", label: "部分一致" },
     { id: "best-before", label: "賞味期限が近い" },
   ];
+
+  const [likedRecipes, setLikedRecipes] = useState<{ [id: string]: boolean }>({});
+
+  const toggleLike = (id: string) => {
+    setLikedRecipes((prev) => ({
+      ...prev,
+      [id]: !prev[id], // 押されたIDだけ反転
+    }));
+  };
 
   const recommendedRecipes: Recipe[] = [
     {
@@ -55,20 +65,45 @@ const FreshPlateRecipes: React.FC = () => {
     },
   ];
 
-  const RecipeCard: React.FC<{ recipe: Recipe }> = ({ recipe }) => (
-    <div className="group cursor-pointer">
-      <div
-        className="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-lg mb-2 transition-transform duration-300 group-hover:scale-105"
-        style={{ backgroundImage: `url("${recipe.imageUrl}")` }}
-      />
-      <h4 className="font-medium text-gray-800 dark:text-gray-200 group-hover:text-green-500">
-        {recipe.title}
-      </h4>
-      <p className="text-sm text-gray-500 dark:text-gray-400">
-        {recipe.cookingTime}
-      </p>
-    </div>
-  );
+  const RecipeCard: React.FC<{ recipe: Recipe }> = ({ recipe }) => {
+    const isLiked = likedRecipes[recipe.id] || false;
+
+    return (
+      <div className="recip-card group rounded-lg cursor-pointer overflow-hidden">
+        <Image
+          alt="料理名"
+          width={500}
+          height={160}
+          className="w-full h-40 object-cover"
+          src={recipe.imageUrl}
+        />
+        <div className="p-4">
+          <h4 className="font-medium text-gray-800 group-hover:text-green-500">
+            {recipe.title}
+          </h4>
+          <div className="flex justify-between items-center">
+            <p className="text-sm text-gray-500 mt-1">{recipe.cookingTime}</p>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                toggleLike(recipe.id);
+              }}
+              className="transition-transform duration-200 hover:scale-110"
+            >
+              <Heart
+                size={22}
+                className={`${
+                  isLiked
+                    ? "fill-red-500 text-red-500"
+                    : "text-gray-400"
+                } transition-colors duration-200`}
+              />
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   const RecipeSection: React.FC<{ title: string; recipes: Recipe[] }> = ({ title, recipes }) => (
     <section className="mb-12">
