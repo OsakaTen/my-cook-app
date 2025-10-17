@@ -1,17 +1,38 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { createClient } from "@/lib/supabase/server";
 import { FoodCategory, FoodStatus } from "@prisma/client";
 
+// 食材更新
 export async function PUT(
   request: Request,
-  { params }: { params: Promise<{ userId: string; id: string }> }
+  { params }: { params: Promise<{id: string }> }
 ) {
   try {
-    const body = await request.json();
-     const { userId, id } = await params; // ← paramsをawaitで取得
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
-    const updated = await prisma.foodItem.updateMany({
-      where: { id: Number(id), userId: Number(userId) },
+    const { id } = await params;
+    const body = await request.json();
+
+    // 自分の食材かチェック
+    const existing = await prisma.foodItem.findFirst({
+      where: { 
+        id: parseInt(id),
+        userId: user.id 
+      },
+    });
+
+    if (!existing) {
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
+
+    const foodItem  = await prisma.foodItem.update({
+      where: { id: parseInt(id) },
       data: {
         name: body.name,
         quantity: body.quantity,
@@ -21,16 +42,9 @@ export async function PUT(
       },
     });
 
-    if (updated.count === 0) {
-      return NextResponse.json(
-        { error: "更新対象がありません" },
-        { status: 404 }
-      );
-    }
-
-    return NextResponse.json({ message: "更新しました" });
+    return NextResponse.json(foodItem);
   } catch (error) {
-    console.error("PUT /foodItem error:", error);
+    console.error("PUT /api/food-items error:", error);
     return NextResponse.json(
       { error: "更新に失敗しました" },
       { status: 500 }
@@ -38,27 +52,40 @@ export async function PUT(
   }
 }
 
+// 食材削除
 export async function DELETE(
   request: Request,
-  { params }: { params: Promise<{ userId: string; id: string }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { userId, id } = await params; // ← paramsをawaitで取得
-
-    const deleted = await prisma.foodItem.deleteMany({
-      where: { id: Number(id), userId: Number(userId) },
-    });
-
-    if (deleted.count === 0) {
-      return NextResponse.json(
-        { error: "削除対象がありません" },
-        { status: 404 }
-      );
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    return NextResponse.json({ message: "削除しました" });
+    const { id } = await params; // ← paramsをawaitで取得
+
+    // 自分の食材かチェック
+    const existing = await prisma.foodItem.findFirst({
+      where: { 
+        id: parseInt(id),
+        userId: user.id 
+      },
+    });
+
+    if (!existing) {
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
+
+    await prisma.foodItem.delete({
+      where: { id: parseInt(id) },
+    });
+
+    return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("DELETE /foodItem error:", error);
+    console.error("DELETE /api/food-items error:", error);
     return NextResponse.json(
       { error: "削除に失敗しました" },
       { status: 500 }
