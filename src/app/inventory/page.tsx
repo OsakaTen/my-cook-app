@@ -1,6 +1,6 @@
 "use client"; // Client Componentとして明示
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Header from "@/components/Header";
 import AddFoodForm from "./components/AddForm";
@@ -22,8 +22,9 @@ export default function InventoryPage() {
 
   const categories: FoodCategory[] = ['すべて', '野菜', '果物', '肉', '魚', '乳製品', '調味料', 'その他'];
 
+  // fetchItemsをuseCallbackでメモ化
   // 食材一覧を取得（認証はサーバー側で自動的に行われる）
-  const fetchItems = async () => {
+  const fetchItems = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -53,11 +54,11 @@ export default function InventoryPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [router]); // routerを依存配列に追加
 
   useEffect(() => {
     fetchItems();
-  }, []);
+  }, [fetchItems]);// fetchItemsを依存配列に追加
 
   const handleAddItem = () => {
     fetchItems(); // 一覧を再取得
