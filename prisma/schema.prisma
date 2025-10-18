@@ -83,7 +83,12 @@ model Recipe {
   createdAt    DateTime           @default(now())
   updatedAt    DateTime           @updatedAt
 
+  // 楽天レシピ用のフィールドを追加
+  rakutenRecipeId String?          @unique
+  rakutenRecipeUrl String?
+
   @@index([title])
+  @@index([rakutenRecipeId])
 }
 
 // レシピの材料

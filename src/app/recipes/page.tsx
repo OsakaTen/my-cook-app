@@ -5,7 +5,7 @@ import Filter from "./components/FilterSection";
 import Footer from "@/components/Footer";
 import Image from "next/image";
 import { Heart } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 
 
@@ -19,6 +19,16 @@ interface Recipe {
   matchRate?: number;
   matchedIngredients?: string[];
   missingIngredientsCount?: number;
+}
+
+// DBから取得するレシピの型
+interface DbRecipe {
+  id: number;
+  rakutenRecipeId: string | null;
+  title: string;
+  cookingTime: number;
+  imageUrl: string | null;
+  rakutenRecipeUrl: string | null;
 }
 
 interface ApiRecipe {
@@ -55,14 +65,10 @@ const FreshPlateRecipes: React.FC = () => {
     { id: "best-before", label: "賞味期限が近い" },
   ];
 
-  useEffect(() => {
-    fetchRecipes();
-  }, [activeTab]);
-
-  const fetchRecipes = async () => {
+  const fetchRecipes = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/recipes/suggestions');
+      const response = await fetch(`/api/recipes/suggestions?mode=${activeTab.id}`);
 
       if (response.status === 401) {
         router.push('/login');
@@ -73,11 +79,15 @@ const FreshPlateRecipes: React.FC = () => {
         throw new Error('レシピの取得に失敗しました');
       }
 
-      const data = await response.json();
+      const data: {
+        recipes: ApiRecipe[];
+        userIngredients: string[];
+        message?: string;
+      } = await response.json();
 
       if (data.recipes && data.recipes.length > 0) {
         // 楽天APIのレシピを変換
-        const convertedRecipes: Recipe[] = data.recipes.map((recipe: ApiRecipe) => ({
+        const convertedRecipes: Recipe[] = data.recipes.map((recipe) => ({
           id: recipe.recipeId,
           title: recipe.recipeTitle,
           cookingTime: recipe.recipeIndication,
@@ -111,37 +121,157 @@ const FreshPlateRecipes: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [activeTab.id, router]);
 
-  const toggleLike = async (id: string) => {
-    const newLikedState = !likedRecipes[id];
+  const fetchHistory = useCallback(async () => {
+    try {
+      const response = await fetch('/api/recipes/history');
+      if (response.ok) {
+        const data: DbRecipe[] = await response.json();
+        const converted: Recipe[] = data.map((recipe) => ({
+          id: recipe.rakutenRecipeId || recipe.id.toString(),
+          title: recipe.title,
+          cookingTime: `${recipe.cookingTime} min`,
+          imageUrl: recipe.imageUrl || '/placeholder-recipe.jpg',
+          recipeUrl: recipe.rakutenRecipeUrl || undefined,
+        }));
+        setRecentlyViewedRecipes(converted);
+      }
+    } catch (error) {
+      console.error('Failed to fetch history:', error);
+    }
+  }, []);
+
+  const fetchFavorites = useCallback(async () => {
+    try {
+      const response = await fetch('/api/favorites');
+      if (response.ok) {
+        const data: DbRecipe[] = await response.json();
+        const converted: Recipe[] = data.map((recipe) => ({
+          id: recipe.rakutenRecipeId || recipe.id.toString(),
+          title: recipe.title,
+          cookingTime: `${recipe.cookingTime} min`,
+          imageUrl: recipe.imageUrl || '/placeholder-recipe.jpg',
+          recipeUrl: recipe.rakutenRecipeUrl || undefined,
+        }));
+        setFavoriteRecipes(converted);
+      }
+    } catch (error) {
+      console.error('Failed to fetch favorites:', error);
+    }
+  }, []);
+
+  const fetchLikedStatus = useCallback(async () => {
+    try {
+      const response = await fetch('/api/favorites');
+      if (response.ok) {
+        const data: DbRecipe[] = await response.json();
+        const liked: { [id: string]: boolean } = {};
+        data.forEach((recipe) => {
+          const recipeId = recipe.rakutenRecipeId || recipe.id.toString();
+          liked[recipeId] = true;
+        });
+        setLikedRecipes(liked);
+      }
+    } catch (error) {
+      console.error('Failed to fetch liked status:', error);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchRecipes();
+    fetchHistory();
+    fetchFavorites();
+    fetchLikedStatus();
+  }, [fetchRecipes, fetchHistory, fetchFavorites, fetchLikedStatus]);
+
+  const toggleLike = async (recipe: Recipe, e: React.MouseEvent) => {
+    e.stopPropagation();
+    console.log('Toggle like clicked:', recipe.id, recipe.title);
+
+    const newLikedState = !likedRecipes[recipe.id];
 
     setLikedRecipes((prev) => ({
       ...prev,
-      [id]: newLikedState, // 押されたIDだけ反転
+      [recipe.id]: newLikedState, // 押されたIDだけ反転
     }));
 
     try {
       if (newLikedState) {
-        await fetch('/api/favorites', {
+        console.log('Adding to favorites...');
+        const response = await fetch('/api/favorites', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ recipeId: id }),
+          body: JSON.stringify({
+            rakutenRecipeId: String(recipe.id),
+            title: recipe.title,
+            imageUrl: recipe.imageUrl,
+            cookingTime: recipe.cookingTime.replace(/[^\d]/g, ''),// 数字だけ抽出
+            recipeUrl: recipe.recipeUrl,
+          }),
         });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          console.error('Failed to add favorite:', errorData);
+          throw new Error(errorData.error || 'Failed to add favorite');
+        }
+
+        const result = await response.json();
+        console.log('Added to favorites:', result);
       } else {
-        await fetch(`/api/favorites/${id}`, {
+        console.log('Removing from favorites...');
+        const response = await fetch(`/api/favorites/${recipe.id}`, {
           method: 'DELETE',
         });
+        if (!response.ok) {
+          const errorData = await response.json();
+          console.error('Failed to remove favorite:', errorData);
+          throw new Error(errorData.error || 'Failed to remove favorite');
+        }
+
+        console.log('Removed from favorites');
       }
+
+      // お気に入りを再取得
+      await fetchFavorites();
     } catch (error) {
       console.error('Failed to update favorite:', error);
+
+      // エラー時は元に戻す
+      setLikedRecipes((prev) => ({
+        ...prev,
+        [recipe.id]: !newLikedState,
+      }));
+
+      // エラーメッセージを表示（オプション）
+      alert(error instanceof Error ? error.message : 'お気に入りの更新に失敗しました');
     }
   };
 
   const RecipeCard: React.FC<{ recipe: Recipe }> = ({ recipe }) => {
     const isLiked = likedRecipes[recipe.id] || false;
 
-    const handleCardClick = () => {
+    const handleCardClick = async () => {
+      // 閲覧履歴を保存
+      try {
+        const cookingTime = recipe.cookingTime.replace(/[^\d]/g, ''); // 数字だけ抽出
+
+        await fetch('/api/recipes/view', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            rakutenRecipeId: String(recipe.id),
+            title: recipe.title,
+            imageUrl: recipe.imageUrl,
+            cookingTime: cookingTime || '30',
+            recipeUrl: recipe.recipeUrl,
+          }),
+        });
+      } catch (error) {
+        console.error('Failed to save view history:', error);
+      }
+
       if (recipe.recipeUrl) {
         window.open(recipe.recipeUrl, '_blank');
       }
@@ -195,16 +325,16 @@ const FreshPlateRecipes: React.FC = () => {
             <p className="text-sm text-gray-500 mt-1">{recipe.cookingTime}</p>
             <button
               onClick={(e) => {
-                e.stopPropagation();
-                toggleLike(recipe.id);
+                toggleLike(recipe, e);
               }}
               className="transition-transform duration-200 hover:scale-110"
+              type="button"
             >
               <Heart
                 size={22}
                 className={`${isLiked
-                    ? "fill-red-500 text-red-500"
-                    : "text-gray-400"
+                  ? "fill-red-500 text-red-500"
+                  : "text-gray-400"
                   } transition-colors duration-200`}
               />
             </button>

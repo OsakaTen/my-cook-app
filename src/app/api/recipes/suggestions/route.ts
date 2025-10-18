@@ -3,7 +3,7 @@ import { prisma } from '@/lib/prisma'
 import { createClient } from '@/lib/supabase/server'
 import { searchRecipesByIngredients } from '@/lib/rakuten-recipe'
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
@@ -12,6 +12,9 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    const { searchParams } = new URL(request.url)
+    const mode = searchParams.get('mode') || 'partial' // exact, partial, best-before
+
     // ユーザーの冷蔵庫の食材を取得
     const foodItems = await prisma.foodItem.findMany({
       where: { 
@@ -19,18 +22,37 @@ export async function GET() {
         status: { not: '期限切れ' }, // 期限切れ以外
       },
       orderBy: { expiryDate: 'asc' },
-      take: 10, // 最大10個の食材
     })
 
     if (foodItems.length === 0) {
       return NextResponse.json({ 
         recipes: [],
-        message: '冷蔵庫に食材がありません' 
+        message: '冷蔵庫に食材がありません' ,
+        userIngredients: [],
       })
     }
 
+        // モードに応じて食材を選択
+    let selectedFoodItems = foodItems
+    if (mode === 'best-before') {
+      // 賞味期限が近い順（7日以内）
+      const sevenDaysFromNow = new Date()
+      sevenDaysFromNow.setDate(sevenDaysFromNow.getDate() + 7)
+      
+      selectedFoodItems = foodItems.filter(
+        item => new Date(item.expiryDate) <= sevenDaysFromNow
+      ).slice(0, 10)
+
+      if (selectedFoodItems.length === 0) {
+        selectedFoodItems = foodItems.slice(0, 10)
+      }
+    } else {
+      selectedFoodItems = foodItems.slice(0, 10)
+    }
+
+
     // 食材名のリストを作成
-    const ingredientNames = foodItems.map(item => item.name)
+    const ingredientNames = selectedFoodItems.map(item => item.name)
 
     // 楽天レシピAPIで検索
     const recipes = await searchRecipesByIngredients(ingredientNames)
@@ -50,21 +72,48 @@ export async function GET() {
         )
       })
 
-      // マッチ率を計算（0-100%）
+       // 期限が近い食材を使っているか
+      const usesExpiringIngredients = matchedIngredients.some(item => {
+        const daysUntilExpiry = Math.ceil(
+          (new Date(item.expiryDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
+        )
+        return daysUntilExpiry <= 3
+      })
+
       const matchRate = recipeMaterials.length > 0
         ? Math.round((matchedIngredients.length / recipeMaterials.length) * 100)
         : 0
 
       return {
         ...recipe,
-        matchedIngredients: matchedIngredients.map(i => i.name),
+        matchedIngredients: matchedIngredients.map(i => ({
+          name: i.name,
+          expiryDate: i.expiryDate,
+          daysUntilExpiry: Math.ceil(
+            (new Date(i.expiryDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
+          ),
+        })),
         matchRate,
         missingIngredientsCount: recipeMaterials.length - matchedIngredients.length,
+        usesExpiringIngredients,
+        priorityScore: usesExpiringIngredients ? matchRate + 20 : matchRate,
       }
     })
 
+    // モードに応じてフィルタリング・ソート
+    let filteredRecipes = recipesWithMatch
+    
+    if (mode === 'exact') {
+      filteredRecipes = recipesWithMatch.filter(r => r.matchRate >= 90)
+    } else if (mode === 'partial') {
+      filteredRecipes = recipesWithMatch.filter(r => r.matchRate >= 30)
+    } else if (mode === 'best-before') {
+      // 期限が近い食材を使うレシピを優先
+      filteredRecipes = recipesWithMatch.sort((a, b) => b.priorityScore - a.priorityScore)
+    }
+
     // マッチ率でソート
-    const sortedRecipes = recipesWithMatch.sort((a, b) => b.matchRate - a.matchRate)
+    const sortedRecipes = filteredRecipes.sort((a, b) => b.priorityScore - a.priorityScore)
 
     return NextResponse.json({
       recipes: sortedRecipes,

@@ -7,7 +7,7 @@ export interface RakutenRecipe {
   recipeMaterial: string[]
   recipeIndication: string // 調理時間
   recipeCost: string
-  recipeDescription: string
+  recipeDescription?: string
 }
 
 export interface RakutenRecipeResponse {
@@ -49,3 +49,5 @@ export async function searchRecipesByIngredients(
   const keyword = ingredients.join(' ')
   return searchRakutenRecipes(keyword)
 }
+
+// 楽天レシピAPIのレスポンス型
