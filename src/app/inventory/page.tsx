@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Header from "@/components/Header";
 import AddFoodForm from "./components/AddForm";
 import FoodTable from "./components/FoodTable";
+import Loading from "@/components/Loading";
 import Footer from "@/components/Footer";
 import { FoodCategory, FoodItem } from "./types"
 import { Plus } from 'lucide-react';
@@ -124,16 +125,7 @@ export default function InventoryPage() {
     return matchesCategory && matchesSearch;
   });
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto"></div>
-          <p className="mt-4 text-lg text-slate-600">読み込み中...</p>
-        </div>
-      </div>
-    );
-  }
+  if (loading) return <Loading />;
 
   if (error) {
     return (

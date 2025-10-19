@@ -3,11 +3,19 @@ import { prisma } from '@/lib/prisma'
 import { createClient } from '@/lib/supabase/server'
 import { searchRecipesByIngredients } from '@/lib/rakuten-recipe'
 
+// Supabase から「今ログインしてるユーザー」を確認
+// Prisma で「ユーザーの冷蔵庫の食材」を取得
+// 楽天レシピAPIを呼び出して関連レシピを検索
+// 食材との一致率（マッチ率）を計算
+// ソートして返す
+
 export async function GET(request: Request) {
   try {
+    //Supabase（認証サービス）で「今ログインしているユーザー」を取得。
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     
+    //ユーザーがいなければ 401 Unauthorized（認証エラー）を返して処理を終了。
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }

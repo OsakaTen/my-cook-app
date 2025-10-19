@@ -17,7 +17,9 @@ const RecipeSection: React.FC<Props> = ({
   fetchFavorites,
 }) => {
   const toggleLike = async (recipe: Recipe, e: React.MouseEvent) => {
+    //ハートを押すとお気に入り登録＋詳細ページ遷移の両方が起こる。「詳細ページ遷移」はしたくないので「ここで親のクリックイベントは実行させたくない」
     e.stopPropagation();
+
     if (!setLikedRecipes || !fetchFavorites) return;
     const newLiked = !likedRecipes[recipe.id];
     setLikedRecipes((prev) => ({ ...prev, [recipe.id]: newLiked }));
@@ -27,14 +29,15 @@ const RecipeSection: React.FC<Props> = ({
       const url = newLiked ? "/api/favorites" : `/api/favorites/${recipe.id}`;
       const body = newLiked
         ? JSON.stringify({
-            rakutenRecipeId: String(recipe.id),
-            title: recipe.title,
-            imageUrl: recipe.imageUrl,
-            cookingTime: recipe.cookingTime.replace(/[^\d]/g, ""),
-            recipeUrl: recipe.recipeUrl,
-          })
+          rakutenRecipeId: String(recipe.id),
+          title: recipe.title,
+          imageUrl: recipe.imageUrl,
+          cookingTime: recipe.cookingTime.replace(/[^\d]/g, ""),
+          recipeUrl: recipe.recipeUrl,
+        })
         : undefined;
 
+      //fetch() 関数は、指定したURL（第1引数）に対して、第2引数の設定に従ってHTTPリクエストを送る関数
       await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
