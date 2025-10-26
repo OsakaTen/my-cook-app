@@ -1,22 +1,27 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { createClient } from "@/lib/supabase/server";
 import { FoodCategory, FoodStatus } from "@prisma/client";
 
-export async function GET(
-  request: Request,
-  { params }: { params: Promise<{ userId: string }> }
-) {
+// 食材一覧取得（ログインユーザーのみ）
+export async function GET() {
   try {
-    const { userId } = await params; // ← paramsをawaitで取得
+    // 認証チェック
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
 
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+  
     const foodItems = await prisma.foodItem.findMany({
-      where: { userId: Number(userId) },
+      where: { userId: user.id },
       orderBy: { createdAt: "desc" },
     });
 
     return NextResponse.json(foodItems);
   } catch (error) {
-    console.error("GET /foodItem error:", error);
+    console.error("GET /api/foodItems error:", error);
     return NextResponse.json(
       { error: "データの取得に失敗しました" },
       { status: 500 }
@@ -24,14 +29,18 @@ export async function GET(
   }
 }
 
-export async function POST(
-  request: Request,
-  { params }: { params: Promise<{ userId: string }> }
-) {
+// 食材追加
+export async function POST(request: Request) {
   try {
-    const body = await request.json();
-    const { userId } = await params; // ← paramsをawaitで取得
+    // 認証チェック
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
 
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const body = await request.json();
     console.log("受信データ:", body); // デバッグ
 
     const foodItem = await prisma.foodItem.create({
@@ -41,13 +50,13 @@ export async function POST(
         expiryDate: new Date(body.expiryDate),
         category: body.category as FoodCategory,
         status: body.status as FoodStatus,
-        userId: Number(userId),
+        userId: user.id,
       },
     });
 
     return NextResponse.json(foodItem);
   } catch (error) {
-    console.error("POST /foodItem error:", error);
+    console.error("POST /api/food-items error:", error);
     console.error("エラー詳細:", error);
     return NextResponse.json(
       {
