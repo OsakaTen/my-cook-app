@@ -1,13 +1,15 @@
 /* eslint-disable @next/next/no-img-element */
-
 'use client';
+
 import React, { useState, useEffect } from "react";
 import SearchBar from '../components/SearchBar';
 import Header from "@/components/Header";
+import Loading from "@/components/Loading";
 import Footer from "@/components/Footer";
 import './globals.css'
 import Image from 'next/image'
 import Link from "next/link";
+import { ApiRecipe } from "./recipes/types";
 
 
 export interface Item {
@@ -15,27 +17,39 @@ export interface Item {
   name: string;
 }
 
-const App: React.FC = () => {
-  const [items, setItems] = useState<Item[]>([]);
+interface StepCardProps {
+  icon: string;
+  title: string;
+  description: string;
+  buttonText: string;
+  href: string;
+};
 
-  // 起動時に localStorage から復元
-  useEffect((): void => {
-    const saved = localStorage.getItem("items");
-    if (saved) setItems(JSON.parse(saved));
+const App: React.FC = () => {
+  const [recipes, setRecipes] = useState<ApiRecipe[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchRecipes = async () => {
+      try {
+        // RakutenレシピAPI経由のエンドポイント
+        const res = await fetch("/api/recipes/history");
+        if (!res.ok) throw new Error("API Error");
+        const data = await res.json();
+
+        // data.results など楽天APIの形式に合わせて調整
+        setRecipes(data.recipes || []);
+      } catch (error) {
+        console.error("レシピの取得に失敗しました:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRecipes();
   }, []);
 
-  // items が変わるたびに保存
-  useEffect((): void => {
-    localStorage.setItem("items", JSON.stringify(items));
-  }, [items]);
-
-  interface StepCardProps {
-    icon: string;
-    title: string;
-    description: string;
-    buttonText: string;
-    href: string;
-  }
+  if (loading) return <Loading />;
 
   const StepCard: React.FC<StepCardProps> = ({ icon, title, description, buttonText, href }) => {
     return (
@@ -159,7 +173,7 @@ const App: React.FC = () => {
                 <p className="text-sm text-gray-600 mt-1">おいしい</p>
               </div>
             </div>
-            <div className="recip-card rounded-lg ">
+            <div className="recip-card rounded-lg">
               <img alt="料理名" className="w-full h-40 object-cover"
                 src="" />
               <div className="p-4">

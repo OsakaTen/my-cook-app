@@ -13,7 +13,6 @@ export interface FoodItem {
 }
 
 export interface AddFoodFormProps {
-  userId: number;
   onAdd: () => void;
   onCancel: () => void;
 }

@@ -45,7 +45,7 @@ const SearchBar: React.FC = () => {
   }
 
   return (
-    <div className="flex items-center flex-col mb-12">
+    <div className="flex flex-col mb-12">
       <h2 className="text-2xl font-bold text-gray-800 mb-8 text-center">どんな料理をお探しですか</h2>
       <section>
         <div className="flex flex-wrap justify-center gap-4">
@@ -64,13 +64,17 @@ const SearchBar: React.FC = () => {
           ))}
         </div>
       </section>
-      < input
-        type="text"
-        value={searchQuery}
-        onChange={handleInputChange}
-        className="mt-5 min-w-[700px] focus:outline-none"
-        placeholder="食材を入れてみよう"
-      />
+      <div className="flex justify-center">
+        <div className="w-full max-w-3xl">
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={handleInputChange}
+            className="w-full py-3 pl-4 rounded-md text-xl border border-gray-300 mt-5 focus:outline-none"
+            placeholder="食材を入れてみよう"
+          />
+        </div>
+      </div>
     </div>
   );
 }
