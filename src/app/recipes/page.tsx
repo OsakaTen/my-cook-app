@@ -4,7 +4,7 @@ import Header from "@/components/Header";
 import Filter from "./components/FilterSection";
 import Tabs from "./components/Tabs";
 import RecipeSection from "./components/RecipeSection";
-import LoadingScreen from "./components/LoadingScreen";
+import Loading from "@/components/Loading";
 import Footer from "@/components/Footer";
 import { Recipe, DbRecipe, ApiRecipe, TabOption } from "./types"
 import { useState, useEffect, useCallback } from "react";
@@ -20,6 +20,21 @@ const FreshPlateRecipes: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [userIngredients, setUserIngredients] = useState<string[]>([]);
+
+  const sections = [
+    {
+      title: `冷蔵庫から作れる料理 (${activeTab.label})`,
+      recipes: recommendedRecipes,
+    },
+    {
+      title: "最近確認した料理",
+      recipes: recentlyViewedRecipes,
+    },
+    {
+      title: "お気に入り",
+      recipes: favoriteRecipes,
+    },
+  ];
 
   const tabOptions: TabOption[] = [
     { id: "exact", label: "完全一致" },
@@ -123,7 +138,7 @@ const FreshPlateRecipes: React.FC = () => {
     fetchFavorites();
   }, [fetchRecipes, fetchHistory, fetchFavorites]);
 
-  if (loading) return <LoadingScreen />;
+  if (loading) return <Loading />;
 
   return (
     <div>
@@ -134,11 +149,6 @@ const FreshPlateRecipes: React.FC = () => {
           <h2 className="text-4xl font-bold text-gray-900 mb-4">
             おすすめ
           </h2>
-          {userIngredients.length > 0 && (
-            <p className="text-sm text-gray-600 mb-4">
-              あなたの冷蔵庫: {userIngredients.join(', ')}
-            </p>
-          )}
 
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-600 p-4 rounded-md mb-4">
@@ -156,15 +166,16 @@ const FreshPlateRecipes: React.FC = () => {
 
           {/* Recipe Sections */}
           <div className="space-y-12">
-            <RecipeSection
-              title={`冷蔵庫から作れる料理 (${activeTab.label})`}
-              recipes={recommendedRecipes}
-              likedRecipes={likedRecipes}
-              setLikedRecipes={setLikedRecipes}
-              fetchFavorites={fetchFavorites}
-            />
-            <RecipeSection title="最近確認した料理" recipes={recentlyViewedRecipes} />
-            <RecipeSection title="お気に入り" recipes={favoriteRecipes} />
+            {sections.map((section, index) => (
+              <RecipeSection
+                key={index}
+                title={section.title}
+                recipes={section.recipes}
+                likedRecipes={likedRecipes}
+                setLikedRecipes={setLikedRecipes}
+                fetchFavorites={fetchFavorites}
+              />
+            ))}
           </div>
         </div>
       </main>

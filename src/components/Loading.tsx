@@ -1,9 +1,5 @@
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-
 const LoadingScreen = () => (
   <div>
-    <Header />
     <main className="px-10 mt-20 sm:px-16 md:px-24 lg:px-40 py-8">
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
@@ -12,7 +8,6 @@ const LoadingScreen = () => (
         </div>
       </div>
     </main>
-    <Footer />
   </div>
 );
 
