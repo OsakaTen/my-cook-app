@@ -9,12 +9,12 @@ body {
   line-height: 1.5;
 }
 
-input {
+/* input {
   padding: 0.5rem;
   border-radius: .5rem;
   font-size: 1.5rem;
   border: 1px solid #d1d5db;
-}
+} */
 
 select {
   padding: .5rem;
@@ -23,6 +23,8 @@ select {
   color: #c4c8cf;
   border: 1px solid #d1d5db;
 }
+
+
 
 .form-group {
   display: flex;
@@ -54,4 +56,14 @@ select {
   background: #f87171;
   color: white;
 }
+
+/* スクロールバーを非表示にする */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;  /* IE・Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+
 
