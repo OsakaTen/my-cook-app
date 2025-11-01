@@ -45,7 +45,7 @@ const Header: React.FC = () => {
     <header className="sticky top-0 z-10 flex items-center justify-between border-b border-[#d1e6d9] bg-white/80 backdrop-blur-sm px-6 md:px-10 py-3">
       <div className="flex items-center gap-4">
         <Leaf className="text-[#4CAF50] w-8 h-8" />
-        <h2 className="text-lg font-bold">RecipeApp</h2>
+        <h2 className="text-lg font-bold">i-Stock</h2>
       </div>
       <div className="hidden md:flex items-center gap-9">
         <ul className="flex list-none gap-9">
@@ -107,7 +107,9 @@ const Header: React.FC = () => {
                   </button>
                 </li>
                 <li>
-                  <button className="block w-full text-left text-red-600 px-4 py-2 hover:bg-gray-100">
+                  <button
+                    onClick={handleLogout}
+                    className="block w-full text-left text-red-600 px-4 py-2 hover:bg-gray-100">
                     ログアウト
                   </button>
                 </li>
