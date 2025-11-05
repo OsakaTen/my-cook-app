@@ -3,27 +3,36 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Menu, Leaf } from 'lucide-react';
+import { createClient } from '@/lib/supabase/client';
+import { useRouter } from 'next/navigation';
+import type { User } from '@supabase/supabase-js';
 interface NavItem {
   title: string;
   href: string;
 }
 
 const Header: React.FC = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
   const [open, setOpen] = useState(false);
+  const supabase = createClient();
+  const router = useRouter();
 
   useEffect(() => {
-    // ✅ APIルート経由でログイン状態をチェック
-    const checkSession = async () => {
-      const res = await fetch("/api/auth/me");
-      if (res.ok) {
-        setIsLoggedIn(true);
-      } else {
-        setIsLoggedIn(false);
-      }
+    // 認証状態の確認
+    const checkUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
     };
-    checkSession();
-  }, []);
+
+    checkUser();
+
+    // 認証状態の変更を監視
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, [supabase.auth]);
 
   const navItems: NavItem[] = [
     { title: 'ホーム', href: '/' },
@@ -36,9 +45,11 @@ const Header: React.FC = () => {
 
   // ✅ ログアウト処理
   const handleLogout = async () => {
-    await fetch("/api/auth/logout", { method: "POST" });
-    setIsLoggedIn(false);
-    window.location.href = "/"; // ホームページにリダイレクト
+    await supabase.auth.signOut();
+    setUser(null);
+    setOpen(false);
+    router.push('/');
+    router.refresh();
   };
 
   return (
@@ -49,7 +60,7 @@ const Header: React.FC = () => {
       </div>
       <div className="hidden md:flex items-center gap-9">
         <ul className="flex list-none gap-9">
-          {isLoggedIn ? (
+          {user ? (
             <>
               {navItems.map((item) => (
                 <li key={item.title}>
@@ -85,17 +96,14 @@ const Header: React.FC = () => {
         </ul>
       </div>
       <div className="relative flex items-center gap-4">
-        {/* スマホメニュー用ボタン */}
-        <button className="flex md:hidden items-center justify-center rounded-lg h-10 bg-[#4CAF50]/20 text-[#4CAF50] px-2.5">
-          <Menu className="w-5 h-5" />
-        </button>
-
         {/* プロフィールアイコン（クリックでメニュー表示） */}
         <div className="relative">
-          <button
+          <button 
+            className="w-10 h-10"
             onClick={() => setOpen(!open)}
-            className="w-10 h-10 rounded-full bg-gradient-to-br from-green-400 to-blue-500 focus:outline-none"
-          />
+          >
+            <Menu className="w-5 h-5" />
+          </button>
 
           {/* ↓ ドロップダウンメニュー部分 */}
           {open && (
