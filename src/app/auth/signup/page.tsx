@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import Link from "next/link";
 
@@ -11,38 +10,7 @@ export default function SignUpPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [message, setMessage] = useState<string | null>(null)
-  const router = useRouter()
   const supabase = createClient()
-
-  // const handleSignUp = async (e: React.FormEvent) => {
-  //   e.preventDefault()
-  //   setLoading(true)
-  //   setError(null)
-
-  //   try {
-  //     const response = await fetch('/api/auth/signup', {
-  //       method: 'POST',
-  //       headers: { 'Content-Type': 'application/json' },
-  //       body: JSON.stringify({ email, password }),
-  //     })
-
-  //     const data = await response.json()
-
-  //     if (!response.ok) {
-  //       throw new Error(data.error)
-  //     }
-
-  //     router.push('/login?message=登録が完了しました。ログインしてください。')
-  //   } catch (err: unknown) {
-  //     if (err instanceof Error) {
-  //       setError(err.message)
-  //     } else {
-  //       setError('予期せぬエラーが発生しました。')
-  //     }
-  //   } finally {
-  //     setLoading(false)
-  //   }
-  // }
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -75,6 +43,12 @@ export default function SignUpPage() {
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-600 p-3 rounded-md text-sm mb-4">
             {error}
+          </div>
+        )}
+
+        {message && (
+          <div className="bg-red-50 border border-red-200 text-blue-600 p-3 rounded-md text-sm mb-4">
+            {message}
           </div>
         )}
 

@@ -40,10 +40,11 @@ export default function LoginPage() {
 
       if (error) {
         setError(`${error.message} (${error.status})`)
-        console.error('Login error details:', error)
+        console.error('ログイン失敗 詳細:', error)
         setLoading(false)
       } else {
-        console.log('Login successful!')
+        console.log('ログイン成功!')
+        // 元々アクセスしようとしていたページ（redirectedFromに指定されたページ）へ移動
         const redirectTo = searchParams.get('redirectedFrom') || '/'
         router.push(redirectTo)
         router.refresh()
