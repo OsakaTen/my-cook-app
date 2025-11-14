@@ -156,7 +156,7 @@ export default function InventoryPage() {
           <div className="mb-6">
             <div className="flex items-center gap-7 mb-8">
               <input
-                className="min-w-[700px] rounded-md pl-12 pr-4 py-3 text-slate-800 focus:outline-none placeholder:text-slate-400"
+                className="min-w-[700px]  pl-12 pr-4 focus:outline-none placeholder:text-slate-400 px-2 py-2.5 rounded-lg text-[1.5rem] border border-gray-300"
                 placeholder="食材を検索"
                 type="text"
                 value={searchTerm}

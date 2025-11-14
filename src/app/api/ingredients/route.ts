@@ -3,6 +3,14 @@ import { prisma } from "@/lib/prisma";
 import { createClient } from "@/lib/supabase/server";
 import { FoodCategory, FoodStatus } from "@prisma/client";
 
+export async function getUserFoodItems(userId: string) {
+  return await prisma.foodItem.findMany({
+    where: { userId },
+    orderBy: { createdAt: "desc" },
+  });
+}
+
+
 // 食材一覧取得（ログインユーザーのみ）
 export async function GET() {
   try {
@@ -14,10 +22,7 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
   
-    const foodItems = await prisma.foodItem.findMany({
-      where: { userId: user.id },
-      orderBy: { createdAt: "desc" },
-    });
+    const foodItems = await getUserFoodItems(user.id);
 
     return NextResponse.json(foodItems);
   } catch (error) {

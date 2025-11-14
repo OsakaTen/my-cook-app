@@ -7,17 +7,17 @@ export async function middleware(request: NextRequest) {
   })
 
   const supabase = createServerClient(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_ANON_KEY!,
+    // process.env.SUPABASE_URL!,
+    // process.env.SUPABASE_ANON_KEY!,
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
         getAll() {
           return request.cookies.getAll()
         },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value)
-          )
+          cookiesToSet.forEach(({ name, value, options }) => request.cookies.set(name, value))
           supabaseResponse = NextResponse.next({
             request,
           })
@@ -35,13 +35,14 @@ export async function middleware(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname
 
-  // 1️⃣ ホーム・認証系ページは常にアクセス許可
+  // === 1️⃣ ホーム・認証系ページは常にアクセス許可 ===
   if (
     pathname === '/' ||
     pathname.startsWith('/auth/') ||
-    pathname.startsWith('/api/auth/')
+    pathname.startsWith('/api/auth/') ||
+    pathname.startsWith('/error')
   ) {
-    // ✅ ログイン済みユーザーが /auth/login や /auth/signup に来たら /dashboard にリダイレクト
+    // ✅ ログイン済みユーザーが /auth/login や /auth/signup に来たら / にリダイレクト
     if (
       user &&
       (pathname.startsWith('/auth/login') || pathname.startsWith('/auth/signup'))
@@ -50,7 +51,6 @@ export async function middleware(request: NextRequest) {
       url.pathname = '/'
       return NextResponse.redirect(url)
     }
-
     return supabaseResponse
   }
 
@@ -66,12 +66,15 @@ export async function middleware(request: NextRequest) {
     if (!user) {
       const url = request.nextUrl.clone()
       url.pathname = '/auth/login'
+      // 元のURLを保存（ログイン後に戻れるように）
+      url.searchParams.set('redirectedFrom', pathname)
       return NextResponse.redirect(url)
     }
   }
 
   // === 3️⃣ それ以外のページは通常通り ===
   return supabaseResponse
+
 }
 
 export const config = {
@@ -79,3 +82,18 @@ export const config = {
     '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 }
+
+//       setAll(cookiesToSet) {
+//         cookiesToSet.forEach(({ name, value, options }) =>
+//           request.cookies.set(name, value)
+//         )
+//         supabaseResponse = NextResponse.next({
+//           request,
+//         })
+//         cookiesToSet.forEach(({ name, value, options }) =>
+//           supabaseResponse.cookies.set(name, value, options)
+//         )
+//       },
+//     },
+//   }
+// )
