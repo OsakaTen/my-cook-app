@@ -1,86 +1,152 @@
-import { PrismaClient } from '@prisma/client';
-import fetch from 'node-fetch';
+// scripts/sync-categories.ts
+import { PrismaClient } from '@prisma/client'
+import fetch from 'node-fetch'
 
-const prisma = new PrismaClient();
-const RAKUTEN_APP_ID = process.env.RAKUTEN_APP_ID!;
+const prisma = new PrismaClient()
+const RAKUTEN_APP_ID = process.env.RAKUTEN_APP_ID!
+
+// --- 楽天APIレスポンス型定義 ---
+
+type RakutenCategoryBase = {
+  categoryId: number
+  categoryName: string
+  categoryUrl: string
+}
+
+type LargeCategory = RakutenCategoryBase & {
+  // large には parentCategoryId は基本的に存在しない
+}
+
+type MediumCategory = RakutenCategoryBase & {
+  parentCategoryId: number // 親 large の categoryId
+}
+
+type SmallCategory = RakutenCategoryBase & {
+  parentCategoryId: number // 親 medium の categoryId
+}
+
+type CategoryListResponse = {
+  result?: {
+    large?: LargeCategory[]
+    medium?: MediumCategory[]
+    small?: SmallCategory[]
+  }
+}
 
 // 楽天レシピAPIからカテゴリを取得
 async function fetchCategories() {
-  const response = await fetch(
-    `https://app.rakuten.co.jp/services/api/Recipe/CategoryList/20170426?applicationId=${RAKUTEN_APP_ID}`
-  );
+  console.log('📡 楽天レシピ CategoryList API にアクセス中...')
+
+  const url = `https://app.rakuten.co.jp/services/api/Recipe/CategoryList/20170426?applicationId=${RAKUTEN_APP_ID}`
+
+  const response = await fetch(url)
 
   if (!response.ok) {
-    throw new Error(`楽天APIリクエストに失敗しました: ${response.statusText}`);
+    throw new Error(`楽天APIリクエストに失敗しました: ${response.status} ${response.statusText}`)
   }
 
-  const data = (await response.json()) as {
-    result?: {
-      large?: any[];
-      medium?: any[];
-      small?: any[];
-    };
-  };
+  const data = (await response.json()) as CategoryListResponse
 
   if (!data.result) {
-    throw new Error('APIレスポンスに result が存在しません');
+    throw new Error('APIレスポンスに result が存在しません')
   }
 
-  // 3階層すべてを1つの配列にまとめる
-  const categories = [
-    ...(data.result.large || []),
-    ...(data.result.medium || []),
-    ...(data.result.small || []),
-  ];
+  const large = data.result.large ?? []
+  const medium = data.result.medium ?? []
+  const small = data.result.small ?? []
 
-  return categories;
+  console.log(
+    `✅ 取得完了: large=${large.length}, medium=${medium.length}, small=${small.length}, total=${
+      large.length + medium.length + small.length
+    }`
+  )
+
+  return { large, medium, small }
 }
 
-// Prismaに保存
 async function main() {
-  console.log('📥 楽天APIからカテゴリ取得中...');
-  const categories = await fetchCategories();
-  console.log(`📊 ${categories.length}件のカテゴリを処理しました`);
+  console.log('📥 楽天APIからカテゴリ取得中...')
+  const { large, medium, small } = await fetchCategories()
 
-  console.log('💾 Supabaseに保存中...');
+  console.log('💾 Supabase(PostgreSQL) にカテゴリを保存します...')
 
-  for (const c of categories) {
-    try {
-      // null/undefinedを除去して整形
-      const cleanData = {
-        categoryId: c.categoryId?.toString() ?? '', // Prismaがstringなら統一
+  // 1️⃣ large（大カテゴリ）を先に保存（親なし）
+  console.log('➡️ large カテゴリを保存中...')
+  for (const c of large) {
+    const categoryId = String(c.categoryId)
+
+    await prisma.recipeCategory.upsert({
+      where: { categoryId },
+      update: {
         categoryName: c.categoryName ?? '不明カテゴリ',
-        categoryUrl: c.categoryUrl ?? '',
-        parentCategoryId: c.parentCategoryId
-          ? c.parentCategoryId.toString()
-          : null,
-      };
-
-      // categoryId が空ならスキップ
-      if (!cleanData.categoryId) {
-        console.warn('⚠️ categoryIdが空のためスキップ:', c);
-        continue;
-      }
-
-      await prisma.recipeCategory.upsert({
-        where: { categoryId: cleanData.categoryId },
-        update: cleanData,
-        create: cleanData,
-      });
-    } catch (err) {
-      console.error('❌ 個別エラー発生:', err);
-      console.error('問題のデータ:', c);
-    }
+        categoryUrl: c.categoryUrl ?? null,
+        // large は親を持たない
+        parentCategoryId: null,
+      },
+      create: {
+        categoryId,
+        categoryName: c.categoryName ?? '不明カテゴリ',
+        categoryUrl: c.categoryUrl ?? null,
+        parentCategoryId: null,
+      },
+    })
   }
+  console.log('✅ large カテゴリ保存完了')
 
-  console.log('✅ カテゴリ同期が完了しました！');
+  // 2️⃣ medium（中カテゴリ）を保存（親 = large.categoryId）
+  console.log('➡️ medium カテゴリを保存中...')
+  for (const c of medium) {
+    const categoryId = String(c.categoryId)
+    const parentCategoryId = String(c.parentCategoryId)
+
+    await prisma.recipeCategory.upsert({
+      where: { categoryId },
+      update: {
+        categoryName: c.categoryName ?? '不明カテゴリ',
+        categoryUrl: c.categoryUrl ?? null,
+        parentCategoryId, // 親の categoryId
+      },
+      create: {
+        categoryId,
+        categoryName: c.categoryName ?? '不明カテゴリ',
+        categoryUrl: c.categoryUrl ?? null,
+        parentCategoryId,
+      },
+    })
+  }
+  console.log('✅ medium カテゴリ保存完了')
+
+  // 3️⃣ small（小カテゴリ）を保存（親 = medium.categoryId）
+  console.log('➡️ small カテゴリを保存中...')
+  for (const c of small) {
+    const categoryId = String(c.categoryId)
+    const parentCategoryId = String(c.parentCategoryId)
+
+    await prisma.recipeCategory.upsert({
+      where: { categoryId },
+      update: {
+        categoryName: c.categoryName ?? '不明カテゴリ',
+        categoryUrl: c.categoryUrl ?? null,
+        parentCategoryId,
+      },
+      create: {
+        categoryId,
+        categoryName: c.categoryName ?? '不明カテゴリ',
+        categoryUrl: c.categoryUrl ?? null,
+        parentCategoryId,
+      },
+    })
+  }
+  console.log('✅ small カテゴリ保存完了')
+
+  console.log('🎉 すべてのカテゴリ同期が完了しました！')
 }
 
 // 実行
 main()
   .catch((err) => {
-    console.error('❌ 全体エラーが発生しました:', err);
+    console.error('❌ 全体エラーが発生しました:', err)
   })
   .finally(async () => {
-    await prisma.$disconnect();
-  });
+    await prisma.$disconnect()
+  })

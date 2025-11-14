@@ -135,25 +135,22 @@ model FavoriteRecipe {
   @@index([userId])
 }
 
-// 楽天レシピカテゴリ（キャッシュ用）
 model RecipeCategory {
   id             String   @id @default(cuid())
   categoryId     String   @unique
   categoryName   String
   categoryUrl    String?
-  
-  // 👇 親カテゴリ（自己参照リレーション）
-  parentCategoryId String? 
-  parentCategory    RecipeCategory? @relation("CategoryHierarchy", fields: [parentCategoryId], references: [categoryId])
-  childCategories   RecipeCategory[] @relation("CategoryHierarchy")
 
-  category1      String?
-  category2      String?
-  category3      String?
+  // 親カテゴリ（親の categoryId を参照する設計）
+  parentCategoryId String?
+  parent           RecipeCategory?  @relation("CategoryHierarchy", fields: [parentCategoryId], references: [categoryId])
+  children         RecipeCategory[] @relation("CategoryHierarchy")
+
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
   @@index([categoryName])
   @@index([parentCategoryId])
 }
+
 
