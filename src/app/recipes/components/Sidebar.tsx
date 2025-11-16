@@ -45,23 +45,27 @@ export default function Sidebar({
   onReset,
 }: Props) {
   const [ingredients, setIngredients] = useState<string[]>(
-    initialFilters?.ingredients ?? []
+    initialFilters?.ingredients ?? [],
   );
   const [cuisines, setCuisines] = useState<CuisineType[]>(
-    initialFilters?.cuisines ?? []
+    initialFilters?.cuisines ?? [],
   );
-  const [difficulty, setDifficulty] = useState(initialFilters?.difficulty ?? "");
+  const [difficulty, setDifficulty] = useState(
+    initialFilters?.difficulty ?? "",
+  );
   const [cookingTime, setCookingTime] = useState(
-    initialFilters?.cookingTime ?? ""
+    initialFilters?.cookingTime ?? "",
   );
   const [favoritesOnly, setFavoritesOnly] = useState(
-    initialFilters?.favoritesOnly ?? false
+    initialFilters?.favoritesOnly ?? false,
   );
 
   // cuisine checkbox toggle
   const toggleCuisine = (key: CuisineType) => {
     setCuisines((prev) =>
-      prev.includes(key) ? prev.filter((p) => p !== key) : [...prev, key]
+      prev.includes(key)
+        ? prev.filter((p) => p !== key)
+        : [...prev, key],
     );
   };
 
@@ -105,16 +109,17 @@ export default function Sidebar({
         </summary>
 
         <div className="pl-2 pt-2 space-y-4">
-          {/* カテゴリ選択（元のカテゴリブロックの機能をここに移設） */}
+          {/* カテゴリ選択 */}
           <div>
             <div className="flex flex-wrap gap-2">
               {/* 総合ボタン */}
               <button
                 onClick={() => onSelect(null)}
-                className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${selectedId === null
-                  ? "bg-green-200 text-green-800 font-semibold"
-                  : "bg-[#f6f8f7] hover:bg-green-50 border border-[#d1e6d9]"
-                  }`}
+                className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                  selectedId === null
+                    ? "bg-green-200 text-green-800 font-semibold"
+                    : "bg-[#f6f8f7] hover:bg-green-50 border border-[#d1e6d9]"
+                }`}
               >
                 総合
               </button>
@@ -126,10 +131,11 @@ export default function Sidebar({
                   <button
                     key={c.id}
                     onClick={() => onSelect(c.id)}
-                    className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${active
+                    className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                      active
                         ? "bg-green-200 text-green-800 font-semibold"
                         : "bg-[#f6f8f7] hover:bg-green-50 border border-[#d1e6d9]"
-                      }`}
+                    }`}
                   >
                     {c.name}
                   </button>
@@ -194,7 +200,10 @@ export default function Sidebar({
         </summary>
         <div className="pl-2 pt-2">
           {["簡単", "普通", "難しい"].map((level) => (
-            <label key={level} className="flex gap-x-3 py-2 items-center cursor-pointer">
+            <label
+              key={level}
+              className="flex gap-x-3 py-2 items-center cursor-pointer"
+            >
               <input
                 type="radio"
                 name="difficulty"
@@ -216,7 +225,10 @@ export default function Sidebar({
         </summary>
         <div className="pl-2 pt-2">
           {["15分以内", "30分以内", "60分以内"].map((time) => (
-            <label key={time} className="flex gap-x-3 py-2 items-center cursor-pointer">
+            <label
+              key={time}
+              className="flex gap-x-3 py-2 items-center cursor-pointer"
+            >
               <input
                 type="radio"
                 name="cooking_time"
@@ -241,11 +253,12 @@ export default function Sidebar({
             }}
             className={`toggle ${favoritesOnly ? "on" : ""}`}
           >
-            <span className="circle"></span>
+            <span className="circle" />
           </div>
         </summary>
       </details>
 
+      {/* 自分の冷蔵庫から（今は favoritesOnly と同じ state を使用） */}
       <details className="flex flex-col border-t border-[#d1e6d9] py-2 group" open>
         <summary className="flex cursor-pointer items-center justify-between gap-6 py-2">
           <p className="text-sm font-medium">自分の冷蔵庫から</p>
@@ -256,7 +269,7 @@ export default function Sidebar({
             }}
             className={`toggle ${favoritesOnly ? "on" : ""}`}
           >
-            <span className="circle"></span>
+            <span className="circle" />
           </div>
         </summary>
       </details>
@@ -270,9 +283,7 @@ export default function Sidebar({
           絞り込み
         </button>
         <button
-          onClick={() => {
-            handleReset();
-          }}
+          onClick={handleReset}
           className="w-full h-11 px-6 rounded-lg bg-transparent border border-[#d1e6d9] hover:bg-[#f6f8f7] text-sm font-medium transition-colors"
         >
           リセット
