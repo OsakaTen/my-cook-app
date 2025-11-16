@@ -115,11 +115,10 @@ export default function Sidebar({
               {/* 総合ボタン */}
               <button
                 onClick={() => onSelect(null)}
-                className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                  selectedId === null
+                className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${selectedId === null
                     ? "bg-green-200 text-green-800 font-semibold"
                     : "bg-[#f6f8f7] hover:bg-green-50 border border-[#d1e6d9]"
-                }`}
+                  }`}
               >
                 総合
               </button>
@@ -131,11 +130,10 @@ export default function Sidebar({
                   <button
                     key={c.id}
                     onClick={() => onSelect(c.id)}
-                    className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                      active
+                    className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${active
                         ? "bg-green-200 text-green-800 font-semibold"
                         : "bg-[#f6f8f7] hover:bg-green-50 border border-[#d1e6d9]"
-                    }`}
+                      }`}
                   >
                     {c.name}
                   </button>
@@ -149,53 +147,32 @@ export default function Sidebar({
       {/* 料理系統チェックボックス */}
       <details className="flex flex-col border-t border-[#d1e6d9] py-2 group" open>
         <summary className="flex cursor-pointer items-center justify-between gap-6 py-2">
-          <p className="text-sm font-medium">系統</p>
+          <p className="text-sm font-medium">調理時間</p>
           <ChevronDown className="w-5 h-5 group-open:rotate-180 transition-transform" />
         </summary>
         <div className="pl-2 pt-2">
-          <label className="block mb-2">
-            <input
-              type="checkbox"
-              checked={cuisines.includes("japanese")}
-              className="w-4 h-4 mr-2"
-              onChange={() => toggleCuisine("japanese")}
-            />
-            和食
-          </label>
-          <label className="block mb-2">
-            <input
-              type="checkbox"
-              checked={cuisines.includes("western")}
-              className="w-4 h-4 mr-2"
-              onChange={() => toggleCuisine("western")}
-            />
-            洋食
-          </label>
-          <label className="block mb-2">
-            <input
-              type="checkbox"
-              checked={cuisines.includes("chinese")}
-              className="w-4 h-4 mr-2"
-              onChange={() => toggleCuisine("chinese")}
-            />
-            中華
-          </label>
-          <label className="block mb-2">
-            <input
-              type="checkbox"
-              checked={cuisines.includes("other")}
-              className="w-4 h-4 mr-2"
-              onChange={() => toggleCuisine("other")}
-            />
-            その他
-          </label>
+          {["～5分", "5分～15分", "15分～30分","30分～45分","45分～60分","それ以上"].map((time) => (
+            <label
+              key={time}
+              className="flex gap-x-3 py-2 items-center cursor-pointer"
+            >
+              <input
+                type="radio"
+                name="cooking_time"
+                checked={cookingTime === time}
+                onChange={() => setCookingTime(time)}
+                className="h-5 w-5 border-2 border-[#d1e6d9] text-[#4CAF50] focus:ring-0 focus:ring-offset-0"
+              />
+              <p className="text-sm">{time}</p>
+            </label>
+          ))}
         </div>
       </details>
 
       {/* 難易度 */}
       <details className="flex flex-col border-t border-[#d1e6d9] py-2 group" open>
         <summary className="flex cursor-pointer items-center justify-between gap-6 py-2">
-          <p className="text-sm font-medium">難易度</p>
+          <p className="text-sm font-medium">費用</p>
           <ChevronDown className="w-5 h-5 group-open:rotate-180 transition-transform" />
         </summary>
         <div className="pl-2 pt-2">
@@ -212,31 +189,6 @@ export default function Sidebar({
                 className="h-5 w-5 border-2 border-[#d1e6d9] text-[#4CAF50] focus:ring-0 focus:ring-offset-0"
               />
               <p className="text-sm">{level}</p>
-            </label>
-          ))}
-        </div>
-      </details>
-
-      {/* 調理時間 */}
-      <details className="flex flex-col border-t border-[#d1e6d9] py-2 group" open>
-        <summary className="flex cursor-pointer items-center justify-between gap-6 py-2">
-          <p className="text-sm font-medium">調理時間</p>
-          <ChevronDown className="w-5 h-5 group-open:rotate-180 transition-transform" />
-        </summary>
-        <div className="pl-2 pt-2">
-          {["15分以内", "30分以内", "60分以内"].map((time) => (
-            <label
-              key={time}
-              className="flex gap-x-3 py-2 items-center cursor-pointer"
-            >
-              <input
-                type="radio"
-                name="cooking_time"
-                checked={cookingTime === time}
-                onChange={() => setCookingTime(time)}
-                className="h-5 w-5 border-2 border-[#d1e6d9] text-[#4CAF50] focus:ring-0 focus:ring-offset-0"
-              />
-              <p className="text-sm">{time}</p>
             </label>
           ))}
         </div>
