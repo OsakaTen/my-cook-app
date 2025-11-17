@@ -223,7 +223,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { Menu, Leaf } from 'lucide-react';
+import { Menu, Leaf, Facebook, Instagram, Linkedin, Youtube } from 'lucide-react';
 import Loading from "@/components/Loading";
 import { createClient } from "@/lib/supabase/client";
 import type { User } from "@supabase/supabase-js";
@@ -274,7 +274,7 @@ const App: React.FC = () => {
     { title: '設定', href: '/settings' },
   ];
 
-   const handleLogout = async () => {
+  const handleLogout = async () => {
     await supabase.auth.signOut();
     setUser(null);
     setOpen(false);
@@ -285,9 +285,9 @@ const App: React.FC = () => {
   // if (loading) return <Loading />;
 
   return (
-    <div className="min-h-screen  bg-white/80 text-black">
+    <div className="min-h-screen bg-white text-black">
       {/* ===== ナビゲーション & ヒーロー ===== */}
-      <header className=" flex items-center justify-between border-b border-[#d1e6d9] bg-[#f6f8f7] backdrop-blur-sm px-6 md:px-10 py-3">
+      <header className=" flex items-center justify-between border-b border-[#d1e6d9] bg-white backdrop-blur-sm px-6 md:px-10 py-3">
         <div className="flex items-center gap-4">
           <Leaf className="text-[#4CAF50] w-8 h-8" />
           <h2 className="text-lg font-bold">i-Stock</h2>
@@ -300,7 +300,7 @@ const App: React.FC = () => {
                   <li key={item.title}>
                     <Link
                       href={item.href}
-                      className="text-md font-medium hover:text-[#4CAF50] transition-colors"
+                      className="text-md font-medium hover:text-[#58a359] transition-colors"
                     >
                       {item.title}
                     </Link>
@@ -363,64 +363,64 @@ const App: React.FC = () => {
       </header>
 
       <section className="py-20">
-          <div className="max-w-6xl mx-auto px-4">
-            <div className="grid md:grid-cols-2 gap-10 items-center">
-              {/* 左画像 */}
-              <div>
-                <div className="aspect-[4/3] w-full overflow-hidden rounded-3xl bg-slate-800">
-                  <img
-                    src="https://images.pexels.com/photos/3184183/pexels-photo-3184183.jpeg?auto=compress&cs=tinysrgb&w=1200"
-                    alt="料理を考える人たち"
-                    className="h-full w-full object-cover"
-                  />
-                </div>
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="grid md:grid-cols-2 gap-10 items-center">
+            {/* 左画像 */}
+            <div>
+              <div className="aspect-[4/3] w-full overflow-hidden rounded-3xl bg-slate-800">
+                <img
+                  src="https://images.pexels.com/photos/3184183/pexels-photo-3184183.jpeg?auto=compress&cs=tinysrgb&w=1200"
+                  alt="料理を考える人たち"
+                  className="h-full w-full object-cover"
+                />
               </div>
+            </div>
 
-              {/* 右テキスト */}
-              <div className="space-y-5">
-                <h1 className="text-black text-3xl md:text-4xl lg:text-4xl leading-tight tracking-tight">
-                  毎日の料理に新しい発見を
-                </h1>
+            {/* 右テキスト */}
+            <div className="space-y-5">
+              <h1 className="text-black text-3xl md:text-4xl lg:text-4xl leading-tight tracking-tight">
+                毎日の料理に新しい発見を
+              </h1>
 
-                <p className="text-sm md:text-base text-black leading-relaxed">
-                  冷蔵庫にある食材や自分の好きな食材からぴったりのレシピを提案。<br />
-                  毎日の「何作ろう？」を、もっと簡単で、もっと楽しい時間に変えます。
-                </p>
+              <p className="text-sm md:text-base text-black leading-relaxed">
+                冷蔵庫にある食材や自分の好きな食材からぴったりのレシピを提案。<br />
+                毎日の「何作ろう？」を、もっと簡単で、もっと楽しい時間に変えます。
+              </p>
 
-                <div className="flex flex-wrap gap-3">
-                  {user ? (
-                    <>
-                      <Link
-                        href="/inventory"
-                        className="inline-flex items-center rounded-full bg-blue-500 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-600"
-                      >
-                        在庫を管理する
-                      </Link>
-                      <Link
-                        href="/recipes"
-                        className="inline-flex items-center rounded-full border border-slate-600 px-5 py-2.5 text-sm font-semibold text-slate-100 bg-slate-800"
-                      >
-                        レシピを探す
-                      </Link>
-                    </>
-                  ) : (
-                    <>
-                      <Link
-                        href="/auth/signup"
-                        className="inline-flex items-center rounded-full bg-blue-500 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-600"
-                      >
-                        無料で始める
-                      </Link>
-                    </>
-                  )}
-                </div>
+              <div className="flex flex-wrap gap-3">
+                {user ? (
+                  <>
+                    <Link
+                      href="/inventory"
+                      className="inline-flex items-center rounded-xl bg-black px-5 py-2.5 text-sm font-semibold text-white shadow-sm"
+                    >
+                      在庫を管理する
+                    </Link>
+                    <Link
+                      href="/recipes"
+                      className="inline-flex items-center rounded-xl border border-black px-5 py-2.5 text-sm font-semibold text-black bg-white"
+                    >
+                      レシピを探す
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      href="/auth/signup"
+                      className="inline-flex items-center rounded-full bg-blue-500 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-600"
+                    >
+                      無料で始める
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
       {/* ===== ダークセクション：サービス特徴 ===== */}
-      <section id="features" className="bg-blue-950 pb-16">
+      <section id="features" className=" pb-16">
         <div className="max-w-6xl mx-auto px-4 lg:px-0">
           <div className="text-center mb-10">
             <h2 className="text-2xl md:text-3xl font-semibold mb-3">
@@ -706,103 +706,89 @@ const App: React.FC = () => {
       </section>
 
       {/* ===== フッター ===== */}
-      <footer className="bg-slate-900 text-slate-300 border-t border-slate-800">
-        <div className="max-w-6xl mx-auto px-4 lg:px-0 py-10">
-          <div className="grid md:grid-cols-4 gap-8 text-sm">
-            <div>
-              <div className="flex items-center gap-2 mb-3">
-                <div className="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center text-xs font-bold">
-                  Zap
-                </div>
-                <span className="font-semibold tracking-tight">冷蔵庫レシピ</span>
+      <footer className="border-t border-slate-200 bg-white">
+        <div className="mx-auto max-w-6xl px-4 py-10 md:py-12">
+          {/* 上段 */}
+          <div className="px-6 grid grid-cols-1  md:grid-cols-4">
+            {/* Logo */}
+            <div className="flex gap-2">
+              <Leaf className="text-[#4CAF50] w-7 h-7" />
+              <h2 className="text-xl text-slate-800">i-Stock</h2>
+            </div>
+
+            {/* カラム1：料理アプリ */}
+            <div className="space-y-3 text-sm">
+              <h3 className="text-xs font-semibold tracking-wide text-slate-500">
+                料理アプリ
+              </h3>
+              <ul className="space-y-2 text-slate-800">
+                <li><a href="#" className="hover:underline">ホーム</a></li>
+                <li><a href="#" className="hover:underline">食材管理</a></li>
+                <li><a href="#" className="hover:underline">レシピ</a></li>
+                <li><a href="#" className="hover:underline">グループ共有</a></li>
+                <li><a href="#" className="hover:underline">レシピ投稿</a></li>
+                <li><a href="#" className="hover:underline">設定</a></li>
+              </ul>
+            </div>
+
+            {/* カラム2：会社情報 */}
+            <div className="space-y-3 text-sm">
+              <h3 className="text-xs font-semibold tracking-wide text-slate-500">
+                開発者
+              </h3>
+              <ul className="space-y-2 text-slate-800">
+                <li><a href="#" className="hover:underline">このアプリについて</a></li>
+                <li><a href="#" className="hover:underline">コンセプト</a></li>
+                <li><a href="#" className="hover:underline">アップデート情報</a></li>
+                <li><a href="#" className="hover:underline">開発者プロフィール</a></li>
+                <li><a href="https://github.com/OsakaTen" className="hover:underline">Github</a></li>
+              </ul>
+            </div>
+
+            {/* カラム3：リソース */}
+            <div className="space-y-6 text-sm">
+              <div className="space-y-3">
+                <h3 className="text-xs font-semibold tracking-wide text-slate-500">
+                  サポート
+                </h3>
+                <ul className="space-y-2 text-slate-800">
+                  <li><a href="#" className="hover:underline">FAQ</a></li>
+                  <li><a href="#" className="hover:underline">お問い合わせ</a></li>
+                  <li><a href="#" className="hover:underline">利用規約</a></li>
+                  <li><a href="#" className="hover:underline">プライバシーポリシー</a></li>
+                  <li><a href="#" className="hover:underline">Cookie設定</a></li>
+                </ul>
               </div>
-              <p className="text-xs text-slate-400">
-                「何作ろう？」から解放される、毎日の料理アシスタントアプリ。
-              </p>
-            </div>
-
-            <div>
-              <h4 className="mb-2 font-semibold text-slate-100 text-xs uppercase tracking-wide">
-                サービス
-              </h4>
-              <ul className="space-y-1 text-xs text-slate-400">
-                <li>
-                  <a href="#" className="hover:text-slate-100">
-                    機能一覧
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-slate-100">
-                    料金プラン
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-slate-100">
-                    導入事例
-                  </a>
-                </li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="mb-2 font-semibold text-slate-100 text-xs uppercase tracking-wide">
-                サポート
-              </h4>
-              <ul className="space-y-1 text-xs text-slate-400">
-                <li>
-                  <a href="#faq" className="hover:text-slate-100">
-                    よくある質問
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-slate-100">
-                    お問い合わせ
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-slate-100">
-                    ヘルプセンター
-                  </a>
-                </li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="mb-2 font-semibold text-slate-100 text-xs uppercase tracking-wide">
-                ポリシー
-              </h4>
-              <ul className="space-y-1 text-xs text-slate-400">
-                <li>
-                  <a href="#" className="hover:text-slate-100">
-                    利用規約
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-slate-100">
-                    プライバシーポリシー
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-slate-100">
-                    クッキーポリシー
-                  </a>
-                </li>
-              </ul>
             </div>
           </div>
 
-          <div className="mt-8 flex flex-col md:flex-row items-center justify-between gap-3 text-[11px] text-slate-500">
-            <p>© 2025 Reizouko Recipe, Inc. All rights reserved.</p>
-            <div className="flex gap-4">
-              <a href="#" className="hover:text-slate-300">
-                X
-              </a>
-              <a href="#" className="hover:text-slate-300">
-                Instagram
-              </a>
-              <a href="#" className="hover:text-slate-300">
-                YouTube
-              </a>
+
+          {/* 下段 */}
+          <div className="mt-10 border-t border-slate-200 pt-4 text-xs text-slate-500">
+            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+              <div className="space-y-1">
+                <p>© 2024 料理アプリ, すべての権利を保留。</p>
+                <div className="flex flex-wrap gap-4">
+                  <button className="hover:underline">プライバシーポリシー</button>
+                  <button className="hover:underline">利用規約</button>
+                  <button className="hover:underline">Cookie設定</button>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-4">
+                <a href="#" aria-label="Instagram" className="hover:opacity-70">
+                  <Instagram size={18} />
+                </a>
+                <a href="#" aria-label="Facebook" className="hover:opacity-70">
+                  <Facebook size={18} />
+                </a>
+                <a href="#" aria-label="LinkedIn" className="hover:opacity-70">
+                  <Linkedin size={18} />
+                </a>
+                <a href="#" aria-label="YouTube" className="hover:opacity-70">
+                  <Youtube size={18} />
+                </a>
+              </div>
             </div>
           </div>
         </div>
