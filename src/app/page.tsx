@@ -229,11 +229,18 @@ import { createClient } from "@/lib/supabase/client";
 import type { User } from "@supabase/supabase-js";
 import "./globals.css";
 import { useRouter } from 'next/navigation';
+import { motion } from "framer-motion";
+import { ChevronDown } from "lucide-react";
 
 interface NavItem {
   title: string;
   href: string;
 }
+
+type FaqItem = {
+  question: string;
+  answer: string;
+};
 
 const App: React.FC = () => {
   const [loading, setLoading] = useState(true);
@@ -274,6 +281,30 @@ const App: React.FC = () => {
     { title: '設定', href: '/settings' },
   ];
 
+  const FAQ_ITEMS: FaqItem[] = [
+    {
+      question: "アプリは無料で使えますか？",
+      answer:
+        "はい、基本機能はすべて無料でご利用いただけます。有料プランではレシピ保存数の上限アップや、詳細な栄養分析機能が利用できます。",
+    },
+    {
+      question: "会員登録に必要なものは何ですか？",
+      answer:
+        "メールアドレスのみで登録可能です。登録後はスマートフォンやPCなど、複数の端末から同じアカウントでご利用いただけます。",
+    },
+    {
+      question: "家族とレシピを共有することはできますか？",
+      answer:
+        "共有リンクを発行することで、アプリを使っていない家族ともレシピを共有できます。共同で買い物リストを管理することも可能です。",
+    },
+    {
+      question: "写真のデータは安全に保管されますか？",
+      answer:
+        "アップロードされた写真は暗号化して保存され、レシピ提案の目的以外には利用しません。詳しくはプライバシーポリシーをご確認ください。",
+    },
+  ];
+
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
     setUser(null);
@@ -285,9 +316,9 @@ const App: React.FC = () => {
   // if (loading) return <Loading />;
 
   return (
-    <div className="min-h-screen bg-white text-black">
+    <div className="min-h-screen bg-white text-black select-none">
       {/* ===== ナビゲーション & ヒーロー ===== */}
-      <header className=" flex items-center justify-between border-b border-[#d1e6d9] bg-white backdrop-blur-sm px-6 md:px-10 py-3">
+      <header className=" flex items-center justify-between border-b border-[#d1e6d9] bg-white backdrop-blur-sm px-6 md:px-10 py-4">
         <div className="flex items-center gap-4">
           <Leaf className="text-[#4CAF50] w-8 h-8" />
           <h2 className="text-lg font-bold">i-Stock</h2>
@@ -362,11 +393,15 @@ const App: React.FC = () => {
         </div>
       </header>
 
-      <section className="py-20">
+      <section className="py-20 ">
         <div className="max-w-6xl mx-auto px-4">
           <div className="grid md:grid-cols-2 gap-10 items-center">
-            {/* 左画像 */}
-            <div>
+
+            <motion.div
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.7, ease: "easeOut" }}
+            >
               <div className="aspect-[4/3] w-full overflow-hidden rounded-3xl bg-slate-800">
                 <img
                   src="https://images.pexels.com/photos/3184183/pexels-photo-3184183.jpeg?auto=compress&cs=tinysrgb&w=1200"
@@ -374,31 +409,50 @@ const App: React.FC = () => {
                   className="h-full w-full object-cover"
                 />
               </div>
-            </div>
+            </motion.div>
 
-            {/* 右テキスト */}
-            <div className="space-y-5">
-              <h1 className="text-black text-3xl md:text-4xl lg:text-4xl leading-tight tracking-tight">
+            <motion.div
+              className="space-y-5"
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.7, ease: "easeOut" }}
+            >
+              <motion.h1
+                className="text-slate-900 text-3xl md:text-4xl lg:text-4xl leading-tight tracking-tight"
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1, duration: 0.4 }}
+              >
                 毎日の料理に新しい発見を
-              </h1>
+              </motion.h1>
 
-              <p className="text-sm md:text-base text-black leading-relaxed">
+              <motion.p
+                className="text-sm md:text-base text-black leading-relaxed"
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2, duration: 0.4 }}
+              >
                 冷蔵庫にある食材や自分の好きな食材からぴったりのレシピを提案。<br />
                 毎日の「何作ろう？」を、もっと簡単で、もっと楽しい時間に変えます。
-              </p>
+              </motion.p>
 
-              <div className="flex flex-wrap gap-3">
+              <motion.div
+                className="flex flex-wrap gap-3"
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3, duration: 0.4 }}
+              >
                 {user ? (
                   <>
                     <Link
                       href="/inventory"
-                      className="inline-flex items-center rounded-xl bg-black px-5 py-2.5 text-sm font-semibold text-white shadow-sm"
+                      className="inline-flex items-center rounded-xl bg-black px-5 py-2.5 text-sm font-semibold text-white transition-transform duration-150 hover:-translate-y-0.5 hover:scale-[1.02]"
                     >
                       在庫を管理する
                     </Link>
                     <Link
                       href="/recipes"
-                      className="inline-flex items-center rounded-xl border border-black px-5 py-2.5 text-sm font-semibold text-black bg-white"
+                      className="inline-flex items-center rounded-xl border border-black px-5 py-2.5 text-sm font-semibold text-black bg-white transition-transform duration-150 hover:-translate-y-0.5 hover:scale-[1.02]"
                     >
                       レシピを探す
                     </Link>
@@ -407,20 +461,20 @@ const App: React.FC = () => {
                   <>
                     <Link
                       href="/auth/signup"
-                      className="inline-flex items-center rounded-full bg-blue-500 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-600"
+                      className="inline-flex items-center rounded-xl bg-black px-5 py-2.5 text-sm font-semibold text-white transition-transform duration-150 hover:-translate-y-0.5 hover:scale-[1.02]"
                     >
                       無料で始める
                     </Link>
                   </>
                 )}
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
           </div>
         </div>
       </section>
 
       {/* ===== ダークセクション：サービス特徴 ===== */}
-      <section id="features" className=" pb-16">
+      <section id="features" className=" py-16">
         <div className="max-w-6xl mx-auto px-4 lg:px-0">
           <div className="text-center mb-10">
             <h2 className="text-2xl md:text-3xl font-semibold mb-3">
@@ -636,7 +690,7 @@ const App: React.FC = () => {
       </section>
 
       {/* ===== FAQ ===== */}
-      <section id="faq" className="bg-slate-50 text-slate-900 pb-16">
+      <section id="faq" className="text-slate-900 py-16">
         <div className="max-w-3xl mx-auto px-4 lg:px-0">
           <div className="text-center mb-8">
             <h2 className="text-2xl font-semibold mb-2">よくある質問</h2>
@@ -644,57 +698,22 @@ const App: React.FC = () => {
               初めての方からよくいただく質問をまとめました。
             </p>
           </div>
-
           <div className="space-y-4">
-            <details className="group border border-slate-200 rounded-2xl bg-white">
-              <summary className="flex cursor-pointer items-center justify-between px-4 py-3 text-sm font-medium text-slate-900">
-                アプリは無料で使えますか？
-                <span className="ml-4 text-xl leading-none text-slate-400 transition-transform group-open:rotate-45">
-                  +
-                </span>
-              </summary>
-              <div className="px-4 pb-4 text-sm text-slate-600">
-                はい、基本機能はすべて無料でご利用いただけます。有料プランではレシピ保存数の上限アップや、詳細な栄養分析機能が利用できます。
-              </div>
-            </details>
-
-            <details className="group border border-slate-200 rounded-2xl bg-white">
-              <summary className="flex cursor-pointer items-center justify-between px-4 py-3 text-sm font-medium text-slate-900">
-                会員登録に必要なものは何ですか？
-                <span className="ml-4 text-xl leading-none text-slate-400 transition-transform group-open:rotate-45">
-                  +
-                </span>
-              </summary>
-              <div className="px-4 pb-4 text-sm text-slate-600">
-                メールアドレスのみで登録可能です。登録後はスマートフォンやPCなど、複数の端末から同じアカウントでご利用いただけます。
-              </div>
-            </details>
-
-            <details className="group border border-slate-200 rounded-2xl bg-white">
-              <summary className="flex cursor-pointer items-center justify-between px-4 py-3 text-sm font-medium text-slate-900">
-                家族とレシピを共有することはできますか？
-                <span className="ml-4 text-xl leading-none text-slate-400 transition-transform group-open:rotate-45">
-                  +
-                </span>
-              </summary>
-              <div className="px-4 pb-4 text-sm text-slate-600">
-                共有リンクを発行することで、アプリを使っていない家族ともレシピを共有できます。共同で買い物リストを管理することも可能です。
-              </div>
-            </details>
-
-            <details className="group border border-slate-200 rounded-2xl bg-white">
-              <summary className="flex cursor-pointer items-center justify-between px-4 py-3 text-sm font-medium text-slate-900">
-                写真のデータは安全に保管されますか？
-                <span className="ml-4 text-xl leading-none text-slate-400 transition-transform group-open:rotate-45">
-                  +
-                </span>
-              </summary>
-              <div className="px-4 pb-4 text-sm text-slate-600">
-                アップロードされた写真は暗号化して保存され、レシピ提案の目的以外には利用しません。詳しくはプライバシーポリシーをご確認ください。
-              </div>
-            </details>
+            {FAQ_ITEMS.map((item) => (
+              <details
+                key={item.question}
+                className="group border border-slate-200 rounded-2xl bg-white"
+              >
+                <summary className="flex cursor-pointer items-center justify-between px-4 py-4 text-sm font-medium text-slate-900">
+                  {item.question}
+                  <ChevronDown className="ml-4 w-5 h-5 group-open:rotate-180 transition-transform" />
+                </summary>
+                <div className="px-4 py-4 border-t border-slate-200 text-sm text-slate-600">
+                  {item.answer}
+                </div>
+              </details>
+            ))}
           </div>
-
           <div className="mt-8 text-center text-xs text-slate-500">
             ここで解決しない場合は、
             <a href="#" className="text-blue-600 underline">
@@ -706,7 +725,7 @@ const App: React.FC = () => {
       </section>
 
       {/* ===== フッター ===== */}
-      <footer className="border-t border-slate-200 bg-white">
+      <footer className="border-t  border-[#d1e6d9]  bg-white">
         <div className="mx-auto max-w-6xl px-4 py-10 md:py-12">
           {/* 上段 */}
           <div className="px-6 grid grid-cols-1  md:grid-cols-4">
@@ -764,7 +783,7 @@ const App: React.FC = () => {
 
 
           {/* 下段 */}
-          <div className="mt-10 border-t border-slate-200 pt-4 text-xs text-slate-500">
+          <div className="mt-10 border-t  border-[#d1e6d9] pt-4 text-xs text-slate-500">
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
               <div className="space-y-1">
                 <p>© 2024 料理アプリ, すべての権利を保留。</p>

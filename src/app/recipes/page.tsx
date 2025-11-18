@@ -41,6 +41,7 @@ const RecipePage: React.FC = () => {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [message, setMessage] = useState("");
   const [favorites, setFavorites] = useState<string[]>([]);
+  const [refrigerator, setRefrigerator] = useState<string[]>([]);
   const [isPending, startTransition] = useTransition();
 
   // -----------------------------
@@ -215,10 +216,10 @@ const RecipePage: React.FC = () => {
             </div>
 
             {message && (
-            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <p className="text-blue-800 text-sm">{message}</p>
-            </div>
-          )}
+              <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <p className="text-blue-800 text-sm">{message}</p>
+              </div>
+            )}
 
             <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
               <input
@@ -239,7 +240,7 @@ const RecipePage: React.FC = () => {
           </div>
 
           {/* メッセージ */}
-          
+
 
           {/* レシピカードグリッド（デザインは前のまま） */}
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
@@ -265,11 +266,10 @@ const RecipePage: React.FC = () => {
                     className="absolute top-3 right-3 bg-white/80 p-2 rounded-full hover:text-red-500 transition-colors"
                   >
                     <Heart
-                      className={`w-6 h-6 ${
-                        favorites.includes(recipe.recipeId)
+                      className={`w-6 h-6 ${favorites.includes(recipe.recipeId)
                           ? "fill-[#FF9800] text-[#FF9800]"
                           : "text-[#FF9800]"
-                      }`}
+                        }`}
                     />
                   </button>
                 </div>

@@ -217,7 +217,7 @@ export default function Sidebar({
           <div
             onClick={(e) => {
               e.stopPropagation();
-              setFavoritesOnly((s) => !s);
+              setRefrigeratorOnly((s) => !s);
             }}
             className={`toggle ${favoritesOnly ? "on" : ""}`}
           >
