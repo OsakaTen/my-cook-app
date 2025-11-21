@@ -91,7 +91,7 @@ const App: React.FC = () => {
       scale: 1,
       transition: {
         duration: 0.5,
-        ease: "easeOut"as const,
+        ease: "easeOut" as const,
         staggerChildren: 0.12,
       },
     },
@@ -276,56 +276,92 @@ const App: React.FC = () => {
         </div>
       </section>
 
-      {/* ===== ダークセクション：サービス特徴 ===== */}
-      <section id="features" className=" py-16">
+      {/* ===== サービス特徴 ===== */}
+      <motion.section
+        id="features"
+        className="bg-[#f5fbf7] text-slate-900 py-16"
+        initial={{ opacity: 0, scale: 0.98 }}
+        whileInView={{ opacity: 1, scale: 1 }}
+        viewport={{ once: true, amount: 0.2 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+      >
         <div className="max-w-6xl mx-auto px-4 lg:px-0">
           <div className="text-center mb-10">
             <h2 className="text-2xl md:text-3xl font-semibold mb-3">
               料理をもっと簡単に、楽しく
             </h2>
-            <p className="text-sm md:text-base text-slate-300">
+            <p className="text-sm md:text-base text-slate-600">
               レシピ検索から食材管理まで、面倒なことはすべてアプリにおまかせ。
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-6">
-            <article className="rounded-2xl bg-slate-800/70 p-5 flex flex-col gap-3">
-              <p className="text-xs text-blue-300 font-semibold uppercase tracking-wide">
+            <motion.article
+              className="rounded-2xl bg-white border border-[#d1e6d9] p-5 flex flex-col gap-3 shadow-sm"
+              initial={{ opacity: 0, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ duration: 0.4, ease: "easeOut", delay: 0.05 }}
+            >
+              <p className="inline-flex w-fit rounded-full bg-[#e6f4ea] px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-[#4CAF50]">
                 FEATURE 01
               </p>
-              <h3 className="text-base font-semibold">
+              <h3 className="text-base font-semibold text-slate-900">
                 冷蔵庫の中身からレシピ提案
               </h3>
-              <p className="text-sm text-slate-300">
+              <p className="text-sm text-slate-600 leading-relaxed">
                 撮影した食材をAIが自動認識。冷蔵庫にあるもので今日の献立を提案します。
               </p>
-            </article>
-            <article className="rounded-2xl bg-slate-800/70 p-5 flex flex-col gap-3">
-              <p className="text-xs text-blue-300 font-semibold uppercase tracking-wide">
+            </motion.article>
+
+            <motion.article
+              className="rounded-2xl bg-white border border-[#d1e6d9] p-5 flex flex-col gap-3 shadow-sm"
+              initial={{ opacity: 0, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ duration: 0.4, ease: "easeOut", delay: 0.15 }}
+            >
+              <p className="inline-flex w-fit rounded-full bg-[#e6f4ea] px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-[#4CAF50]">
                 FEATURE 02
               </p>
-              <h3 className="text-base font-semibold">
+              <h3 className="text-base font-semibold text-slate-900">
                 レシピの難易度・時間で絞り込み
               </h3>
-              <p className="text-sm text-slate-300">
+              <p className="text-sm text-slate-600 leading-relaxed">
                 「10分以内」「初心者向け」など、気分や時間に合わせてレシピをフィルタリング。
               </p>
-            </article>
-            <article className="rounded-2xl bg-slate-800/70 p-5 flex flex-col gap-3">
-              <p className="text-xs text-blue-300 font-semibold uppercase tracking-wide">
+            </motion.article>
+
+            <motion.article
+              className="rounded-2xl bg-white border border-[#d1e6d9] p-5 flex flex-col gap-3 shadow-sm"
+              initial={{ opacity: 0, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ duration: 0.4, ease: "easeOut", delay: 0.25 }}
+            >
+              <p className="inline-flex w-fit rounded-full bg-[#e6f4ea] px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-[#4CAF50]">
                 FEATURE 03
               </p>
-              <h3 className="text-base font-semibold">買い物リストを自動生成</h3>
-              <p className="text-sm text-slate-300">
+              <h3 className="text-base font-semibold text-slate-900">
+                買い物リストを自動生成
+              </h3>
+              <p className="text-sm text-slate-600 leading-relaxed">
                 足りない食材だけを自動でリスト化。スーパーでの買い忘れを防ぎます。
               </p>
-            </article>
+            </motion.article>
           </div>
         </div>
-      </section>
+      </motion.section>
 
-      {/* ===== ホワイトセクション：記事カード ===== */}
-      <section id="articles" className="bg-slate-50 text-slate-900 py-16">
+      {/* ===== 記事カード ===== */}
+      <motion.section
+        id="articles"
+        className="bg-slate-50 text-slate-900 py-16"
+        initial={{ opacity: 0, y: 16 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.25 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+      >
         <div className="max-w-6xl mx-auto px-4 lg:px-0">
           <div className="text-center mb-10">
             <h2 className="text-2xl md:text-3xl font-semibold mb-3">
@@ -336,9 +372,15 @@ const App: React.FC = () => {
             </p>
           </div>
 
+          {/* 上段カード */}
           <div className="grid md:grid-cols-3 gap-6 mb-12">
-            {/* 上段カード */}
-            <article className="bg-white rounded-2xl shadow-sm overflow-hidden border border-slate-100 flex flex-col">
+            <motion.article
+              className="bg-white rounded-2xl shadow-sm overflow-hidden border border-slate-100 flex flex-col"
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ duration: 0.35, ease: "easeOut", delay: 0.05 }}
+            >
               <img
                 src="https://images.pexels.com/photos/4259707/pexels-photo-4259707.jpeg?auto=compress&cs=tinysrgb&w=1200"
                 alt=""
@@ -348,13 +390,19 @@ const App: React.FC = () => {
                 <h3 className="text-sm font-semibold">
                   食材の賞味期限を味方にするコツ
                 </h3>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-slate-500 leading-relaxed">
                   冷蔵庫に眠りがちな食材を、上手に使い切るためのヒントを紹介します。
                 </p>
               </div>
-            </article>
+            </motion.article>
 
-            <article className="bg-white rounded-2xl shadow-sm overflow-hidden border border-slate-100 flex flex-col">
+            <motion.article
+              className="bg-white rounded-2xl shadow-sm overflow-hidden border border-slate-100 flex flex-col"
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ duration: 0.35, ease: "easeOut", delay: 0.15 }}
+            >
               <img
                 src="https://images.pexels.com/photos/3951628/pexels-photo-3951628.jpeg?auto=compress&cs=tinysrgb&w=1200"
                 alt=""
@@ -364,13 +412,19 @@ const App: React.FC = () => {
                 <h3 className="text-sm font-semibold">
                   献立づくりのストレスを減らす5つの習慣
                 </h3>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-slate-500 leading-relaxed">
                   少しの工夫で、毎日の「何を作るか」を楽にする方法をまとめました。
                 </p>
               </div>
-            </article>
+            </motion.article>
 
-            <article className="bg-white rounded-2xl shadow-sm overflow-hidden border border-slate-100 flex flex-col">
+            <motion.article
+              className="bg-white rounded-2xl shadow-sm overflow-hidden border border-slate-100 flex flex-col"
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ duration: 0.35, ease: "easeOut", delay: 0.25 }}
+            >
               <img
                 src="https://images.pexels.com/photos/3296287/pexels-photo-3296287.jpeg?auto=compress&cs=tinysrgb&w=1200"
                 alt=""
@@ -380,78 +434,83 @@ const App: React.FC = () => {
                 <h3 className="text-sm font-semibold">
                   料理を楽しむコミュニティづくり
                 </h3>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-slate-500 leading-relaxed">
                   家族や友人と、レシピや料理の写真を共有する楽しみ方をご紹介。
                 </p>
               </div>
-            </article>
+            </motion.article>
           </div>
 
           {/* 下段カード */}
           <div>
-            <h3 className="text-center text-lg font-semibold mb-6">料理の世界</h3>
+            <h3 className="text-center text-lg font-semibold mb-6">
+              料理の世界
+            </h3>
             <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-4">
-              <article className="bg-white rounded-2xl shadow-sm overflow-hidden border border-slate-100">
-                <img
-                  src="https://images.pexels.com/photos/3296273/pexels-photo-3296273.jpeg?auto=compress&cs=tinysrgb&w=1200"
-                  className="h-32 w-full object-cover"
-                  alt=""
-                />
-                <div className="p-3">
-                  <p className="text-xs font-semibold">1週間まとめて作り置き</p>
-                </div>
-              </article>
-              <article className="bg-white rounded-2xl shadow-sm overflow-hidden border border-slate-100">
-                <img
-                  src="https://images.pexels.com/photos/4109991/pexels-photo-4109991.jpeg?auto=compress&cs=tinysrgb&w=1200"
-                  className="h-32 w-full object-cover"
-                  alt=""
-                />
-                <div className="p-3">
-                  <p className="text-xs font-semibold">忙しい日の10分レシピ</p>
-                </div>
-              </article>
-              <article className="bg-white rounded-2xl shadow-sm overflow-hidden border border-slate-100">
-                <img
-                  src="https://images.pexels.com/photos/3298186/pexels-photo-3298186.jpeg?auto=compress&cs=tinysrgb&w=1200"
-                  className="h-32 w-full object-cover"
-                  alt=""
-                />
-                <div className="p-3">
-                  <p className="text-xs font-semibold">
-                    節約しながら栄養バランス
-                  </p>
-                </div>
-              </article>
-              <article className="bg-white rounded-2xl shadow-sm overflow-hidden border border-slate-100">
-                <img
-                  src="https://images.pexels.com/photos/3739918/pexels-photo-3739918.jpeg?auto=compress&cs=tinysrgb&w=1200"
-                  className="h-32 w-full object-cover"
-                  alt=""
-                />
-                <div className="p-3">
-                  <p className="text-xs font-semibold">
-                    子どもと楽しむクッキング
-                  </p>
-                </div>
-              </article>
+              {[
+                "1週間まとめて作り置き",
+                "忙しい日の10分レシピ",
+                "節約しながら栄養バランス",
+                "子どもと楽しむクッキング",
+              ].map((title, index) => (
+                <motion.article
+                  key={title}
+                  className="bg-white rounded-2xl shadow-sm overflow-hidden border border-slate-100"
+                  initial={{ opacity: 0, y: 10 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.3 }}
+                  transition={{
+                    duration: 0.3,
+                    ease: "easeOut",
+                    delay: 0.05 * index,
+                  }}
+                >
+                  <img
+                    src={
+                      [
+                        "https://images.pexels.com/photos/3296273/pexels-photo-3296273.jpeg?auto=compress&cs=tinysrgb&w=1200",
+                        "https://images.pexels.com/photos/4109991/pexels-photo-4109991.jpeg?auto=compress&cs=tinysrgb&w=1200",
+                        "https://images.pexels.com/photos/3298186/pexels-photo-3298186.jpeg?auto=compress&cs=tinysrgb&w=1200",
+                        "https://images.pexels.com/photos/3739918/pexels-photo-3739918.jpeg?auto=compress&cs=tinysrgb&w=1200",
+                      ][index]
+                    }
+                    className="h-32 w-full object-cover"
+                    alt=""
+                  />
+                  <div className="p-3">
+                    <p className="text-xs font-semibold">{title}</p>
+                  </div>
+                </motion.article>
+              ))}
             </div>
           </div>
         </div>
-      </section>
+      </motion.section>
 
-      {/* ===== ホワイトセクション：レビュー・未来 ===== */}
-      <section className="bg-slate-50 text-slate-900 pb-16">
+      {/* ===== レビュー・未来 ===== */}
+      <motion.section
+        className="bg-slate-50 text-slate-900 pb-16"
+        initial={{ opacity: 0, y: 16 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.25 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+      >
         <div className="max-w-6xl mx-auto px-4 lg:px-0 grid md:grid-cols-2 gap-8">
           {/* 動画レビューカード */}
-          <article className="bg-white rounded-2xl shadow-sm border border-slate-100 p-5 flex flex-col gap-4">
+          <motion.article
+            className="bg-white rounded-2xl shadow-sm border border-slate-100 p-5 flex flex-col gap-4"
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.4, ease: "easeOut", delay: 0.05 }}
+          >
             <div className="relative overflow-hidden rounded-2xl">
               <img
                 src="https://images.pexels.com/photos/4109997/pexels-photo-4109997.jpeg?auto=compress&cs=tinysrgb&w=1200"
                 alt=""
                 className="h-52 w-full object-cover"
               />
-              <button className="absolute inset-0 m-auto h-12 w-12 rounded-full bg-white/90 flex items-center justify-center text-slate-900 text-lg font-bold">
+              <button className="absolute inset-0 m-auto h-12 w-12 rounded-full bg-white/90 flex items-center justify-center text-slate-900 text-lg font-bold shadow-md">
                 ▶
               </button>
             </div>
@@ -459,17 +518,23 @@ const App: React.FC = () => {
               <div className="flex items-center gap-1 text-amber-400 text-sm">
                 ★★★★★
               </div>
-              <p className="text-sm text-slate-700">
+              <p className="text-sm text-slate-700 leading-relaxed">
                 「このアプリのおかげで、冷蔵庫のムダ買いがぐっと減りました。毎日の料理が楽しみになりました。」
               </p>
               <p className="text-xs text-slate-500">
                 30代・会社員 / ユーザーインタビューより
               </p>
             </div>
-          </article>
+          </motion.article>
 
           {/* テキスト＋CTA */}
-          <article className="flex flex-col justify-center gap-5">
+          <motion.article
+            className="flex flex-col justify-center gap-5"
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.4, ease: "easeOut", delay: 0.15 }}
+          >
             <h2 className="text-2xl md:text-3xl font-semibold">
               料理の未来を、あなたの手に。
             </h2>
@@ -480,17 +545,18 @@ const App: React.FC = () => {
             <div className="flex flex-wrap gap-3">
               <Link
                 href={user ? "/inventory" : "/auth/signup"}
-                className="inline-flex items-center rounded-full bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white hover:bg-slate-800"
+                className="inline-flex items-center rounded-full bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white hover:bg-slate-800 transition-colors"
               >
                 今すぐ無料で試す
               </Link>
-              <button className="inline-flex items-center rounded-full border border-slate-300 px-5 py-2.5 text-sm font-semibold text-slate-800 hover:bg-slate-100">
+              <button className="inline-flex items-center rounded-full border border-slate-300 px-5 py-2.5 text-sm font-semibold text-slate-800 hover:bg-slate-100 transition-colors">
                 導入事例を見る
               </button>
             </div>
-          </article>
+          </motion.article>
         </div>
-      </section>
+      </motion.section>
+
 
       {/* ===== FAQ ===== */}
       <motion.section
@@ -595,7 +661,7 @@ const App: React.FC = () => {
 
 
           {/* 下段 */}
-          <div className="mt-10 border-t  border-[#d1e6d9] pt-4 text-xs text-slate-500">
+          <div className="mt-5 border-t  border-[#d1e6d9] pt-4 text-xs text-slate-500">
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
               <div className="space-y-1">
                 <p>© 2024 料理アプリ, すべての権利を保留。</p>

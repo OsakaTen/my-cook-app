@@ -1,8 +1,6 @@
 import React, { useState } from "react";
-import { FoodCategory, FoodStatus, AddFoodFormProps } from "../types";
+import { FoodCategory, AddFoodFormProps } from "../types";
 import { X } from 'lucide-react';
-import { useRouter } from "next/navigation";
-
 
 const AddForm: React.FC<AddFoodFormProps> = ({ onAdd, onCancel }) => {
   const [formData, setFormData] = useState({
@@ -13,8 +11,6 @@ const AddForm: React.FC<AddFoodFormProps> = ({ onAdd, onCancel }) => {
   });
 
   const categories = ['野菜', '果物', '肉', '魚', '乳製品', '調味料', 'その他'];
-  const router = useRouter();
-
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string>("");
 
@@ -37,25 +33,11 @@ const AddForm: React.FC<AddFoodFormProps> = ({ onAdd, onCancel }) => {
     setIsSubmitting(true);
 
     try {
-      // 賞味期限に基づいてstatusを計算
-      const today = new Date();
-      today.setHours(0, 0, 0, 0); // 時刻をリセット
-      const expiry = new Date(formData.expiryDate);
-      expiry.setHours(0, 0, 0, 0); // 時刻をリセット
-      const diffDays = Math.ceil((expiry.getTime() - today.getTime()) / (1000 * 3600 * 24));
-
-      let status: FoodStatus;
-      if (diffDays < 0) {
-        status = '期限切れ';
-      } else if (diffDays <= 3) {
-        status = 'まもなく期限切れ';
-      } else {
-        status = '新鮮';
-      }
-
       const dataToSend = {
-        ...formData,
-        status
+        name: formData.name,
+        quantity: formData.quantity,
+        expiryDate: formData.expiryDate,
+        category: formData.category,
       };
 
       console.log("送信するデータ:", dataToSend); // デバッグ用
@@ -68,12 +50,6 @@ const AddForm: React.FC<AddFoodFormProps> = ({ onAdd, onCancel }) => {
 
       console.log("レスポンスステータス:", res.status); // デバッグ用
 
-      // 未認証の場合はログインページへ
-      if (res.status === 401) {
-        router.push('/login');
-        return;
-      }
-
       if (!res.ok) {
         const errorData = await res.json().catch(() => ({}));
         setError(errorData.details || errorData.message || "追加に失敗しました");
@@ -85,13 +61,13 @@ const AddForm: React.FC<AddFoodFormProps> = ({ onAdd, onCancel }) => {
       console.log("追加成功:", result);
 
       // フォームをリセット
-      setFormData({ 
-        name: "", 
-        quantity: "", 
-        expiryDate: "", 
-        category: "野菜" 
+      setFormData({
+        name: "",
+        quantity: "",
+        expiryDate: "",
+        category: "野菜"
       });
-      
+
       onAdd(); // 親コンポーネントで再取得させる
     } catch (err) {
       setError("通信エラーが発生しました");

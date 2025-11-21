@@ -8,7 +8,7 @@ import FoodTable from "./components/FoodTable";
 import Loading from "@/components/Loading";
 import Footer from "@/components/Footer";
 import { FoodCategory, FoodItem } from "./types"
-import { Plus } from 'lucide-react';
+import { Plus, Leaf, Facebook, Instagram, Linkedin, Youtube } from 'lucide-react';
 
 
 
@@ -84,9 +84,17 @@ export default function InventoryPage() {
         throw new Error('更新に失敗しました');
       }
 
+      const saved = await res.json(); // ← サーバー側で status 計算済みの最新データ
+
+      const normalized = {
+        ...saved,
+        expiryDate: new Date(saved.expiryDate).toISOString().split("T")[0],
+      };
+
       setItems((prev) =>
-        prev.map((item) => (item.id === id ? { ...updatedItem, id } : item))
+        prev.map((item) => (item.id === id ? normalized : item))
       );
+
     } catch (err) {
       console.error("更新に失敗しました:", err);
       alert('更新に失敗しました');
@@ -125,7 +133,7 @@ export default function InventoryPage() {
     return matchesCategory && matchesSearch;
   });
 
-  if (loading) return <Loading />;
+  // if (loading) return <Loading />;
 
   if (error) {
     return (
@@ -146,88 +154,190 @@ export default function InventoryPage() {
   return (
     <div>
       <Header />
-      <main className="flex-1 px-10 py-8 my-22">
-        <div className="max-w-6xl mx-auto">
-          <div className="mb-8">
-            <h1 className="text-4xl font-bold text-slate-800">冷蔵庫の在庫</h1>
-          </div>
+      <main className="flex-1 px-4 md:px-8 lg:px-10 pt-12 py-50">
+        <div className="max-w-6xl mx-auto space-y-8">
+          {/* タイトル */}
+          <header className="flex flex-col gap-2">
+            <h1 className="text-2xl md:text-3xl font-bold text-slate-900">
+              冷蔵庫の在庫
+            </h1>
+            <p className="text-sm text-slate-500">
+              いま冷蔵庫にある食材を見える化して、ムダなく使い切りましょう。
+            </p>
+          </header>
 
-          {/* Search Box */}
-          <div className="mb-6">
-            <div className="flex items-center gap-7 mb-8">
-              <input
-                className="min-w-[700px]  pl-12 pr-4 focus:outline-none placeholder:text-slate-400 px-2 py-2.5 rounded-lg text-[1.5rem] border border-gray-300"
-                placeholder="食材を検索"
-                type="text"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
+          {/* 検索＋追加カード */}
+          <section className="bg-white border border-slate-200 rounded-2xl shadow-sm p-4 md:px-6 md:py-5 space-y-4">
+            {/* Search Box */}
+            <div className="flex flex-col lg:flex-row lg:items-center gap-4">
+              <div className="relative flex-1">
+                <input
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 text-base placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#29C77C]/60 focus:border-[#29C77C] bg-slate-50"
+                  placeholder="食材名やカテゴリで検索"
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+
               <button
                 onClick={() => setShowAddForm(!showAddForm)}
-                className="flex items-center justify-center gap-2 rounded-md h-13 px-6 text-white text-base font-semibold bg-[#29C77C] hover:bg-[#24B36F] transition-colors"
+                className="flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold text-white bg-[#29C77C] hover:bg-[#24B36F] transition-colors shadow-sm"
               >
-                <Plus size={20} />
+                <Plus size={18} />
                 食材を追加
               </button>
             </div>
-          </div>
 
-          {showAddForm && (
-            <AddFoodForm
-              onAdd={handleAddItem}
-              onCancel={() => setShowAddForm(false)}
-            />
-          )}
+            {/* 追加フォーム */}
+            {showAddForm && (
+              <div className="pt-3 border-t border-slate-100">
+                <AddFoodForm
+                  onAdd={handleAddItem}
+                  onCancel={() => setShowAddForm(false)}
+                />
+              </div>
+            )}
+          </section>
 
-          {/* Filter Buttons */}
-          <div className="flex gap-3 mb-8">
-            {categories.map(category => (
+          {/* フィルタボタン */}
+          <section className="flex flex-wrap gap-3">
+            {categories.map((category) => (
               <button
                 key={category}
                 onClick={() => setSelectedCategory(category)}
-                className={`px-4 py-2 rounded-md text-sm border border-slate-200 transition-colors ${selectedCategory === category
-                  ? 'text-white bg-[#29C77C]'
-                  : 'bg-white text-slate-600 hover:bg-green-100 hover:text-green-700 hover:border-green-200'
+                className={`px-4 py-1.5 rounded-full text-xs md:text-sm border transition-colors ${selectedCategory === category
+                  ? "border-transparent bg-[#29C77C] text-white shadow-sm"
+                  : "border-slate-200 bg-white text-slate-600 hover:bg-slate-100 hover:border-slate-300"
                   }`}
               >
                 {category}
               </button>
             ))}
-          </div>
+          </section>
 
-          {/* Table */}
-          {filteredItems.length === 0 ? (
-            <div className="text-center py-12 bg-white rounded-lg border border-slate-200">
-              <p className="text-slate-500 text-lg">
-                {searchTerm || selectedCategory !== 'すべて'
-                  ? '該当する食材が見つかりません'
-                  : '食材がまだ登録されていません'}
-              </p>
-              {!showAddForm && (
-                <button
-                  onClick={() => setShowAddForm(true)}
-                  className="mt-4 px-6 py-2 bg-[#29C77C] text-white rounded-md hover:bg-[#24B36F]"
-                >
-                  最初の食材を追加
-                </button>
-              )}
-            </div>
-          ) : (
-            <FoodTable
-              items={filteredItems}
-              onEdit={handleEditItem}
-              onDelete={handleDeleteItem}
-            />
-          )}
-          {/* <FoodTable
-            items={filteredItems}
-            onEdit={handleEditItem}
-            onDelete={handleDeleteItem}
-          /> */}
+          {/* テーブル or 空状態 */}
+          <section>
+            {filteredItems.length === 0 ? (
+              <div className="bg-white border border-dashed border-slate-300 rounded-2xl py-10 px-4 text-center space-y-3">
+                <p className="text-slate-600 text-sm md:text-base">
+                  {searchTerm || selectedCategory !== "すべて"
+                    ? "該当する食材が見つかりません。条件を変えて再度お試しください。"
+                    : "まだ食材が登録されていません。"}
+                </p>
+                {!showAddForm && (
+                  <button
+                    onClick={() => setShowAddForm(true)}
+                    className="inline-flex items-center justify-center gap-2 mt-1 rounded-full px-5 py-2 text-sm font-semibold text-white bg-[#29C77C] hover:bg-[#24B36F] transition-colors"
+                  >
+                    <Plus size={16} />
+                    最初の食材を追加する
+                  </button>
+                )}
+              </div>
+            ) : (
+              <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-3 md:p-4">
+                <FoodTable
+                  items={filteredItems}
+                  onEdit={handleEditItem}
+                  onDelete={handleDeleteItem}
+                />
+              </div>
+            )}
+          </section>
         </div>
       </main>
-      <Footer />
+
+      {/* <Footer /> */}
+      <footer className="border-t  border-[#d1e6d9]  bg-white">
+        <div className="mx-auto max-w-6xl px-4 py-10 md:py-12">
+          {/* 上段 */}
+          <div className="px-6 grid grid-cols-1  md:grid-cols-4">
+            {/* Logo */}
+            <div className="flex gap-2">
+              <Leaf className="text-[#4CAF50] w-7 h-7" />
+              <h2 className="text-xl text-slate-800">i-Stock</h2>
+            </div>
+
+            {/* カラム1：料理アプリ */}
+            <div className="space-y-3 text-sm">
+              <h3 className="text-xs font-semibold tracking-wide text-slate-500">
+                料理アプリ
+              </h3>
+              <ul className="space-y-2 text-slate-800">
+                <li><a href="#" className="hover:underline">ホーム</a></li>
+                <li><a href="#" className="hover:underline">食材管理</a></li>
+                <li><a href="#" className="hover:underline">レシピ</a></li>
+                <li><a href="#" className="hover:underline">グループ共有</a></li>
+                <li><a href="#" className="hover:underline">レシピ投稿</a></li>
+                <li><a href="#" className="hover:underline">設定</a></li>
+              </ul>
+            </div>
+
+            {/* カラム2：会社情報 */}
+            <div className="space-y-3 text-sm">
+              <h3 className="text-xs font-semibold tracking-wide text-slate-500">
+                開発者
+              </h3>
+              <ul className="space-y-2 text-slate-800">
+                <li><a href="#" className="hover:underline">このアプリについて</a></li>
+                <li><a href="#" className="hover:underline">コンセプト</a></li>
+                <li><a href="#" className="hover:underline">アップデート情報</a></li>
+                <li><a href="#" className="hover:underline">開発者プロフィール</a></li>
+                <li><a href="https://github.com/OsakaTen" className="hover:underline">Github</a></li>
+              </ul>
+            </div>
+
+            {/* カラム3：リソース */}
+            <div className="space-y-6 text-sm">
+              <div className="space-y-3">
+                <h3 className="text-xs font-semibold tracking-wide text-slate-500">
+                  サポート
+                </h3>
+                <ul className="space-y-2 text-slate-800">
+                  <li><a href="#" className="hover:underline">FAQ</a></li>
+                  <li><a href="#" className="hover:underline">お問い合わせ</a></li>
+                  <li><a href="#" className="hover:underline">利用規約</a></li>
+                  <li><a href="#" className="hover:underline">プライバシーポリシー</a></li>
+                  <li><a href="#" className="hover:underline">Cookie設定</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+
+          {/* 下段 */}
+          <div className="mt-5 border-t  border-[#d1e6d9] pt-4 text-xs text-slate-500">
+            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+              <div className="space-y-1">
+                <p>© 2024 料理アプリ, すべての権利を保留。</p>
+                <div className="flex flex-wrap gap-4">
+                  <button className="hover:underline">プライバシーポリシー</button>
+                  <button className="hover:underline">利用規約</button>
+                  <button className="hover:underline">Cookie設定</button>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-4">
+                <a href="#" aria-label="Instagram" className="hover:opacity-70">
+                  <Instagram size={18} />
+                </a>
+                <a href="#" aria-label="Facebook" className="hover:opacity-70">
+                  <Facebook size={18} />
+                </a>
+                <a href="#" aria-label="LinkedIn" className="hover:opacity-70">
+                  <Linkedin size={18} />
+                </a>
+                <a href="#" aria-label="YouTube" className="hover:opacity-70">
+                  <Youtube size={18} />
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
+
   );
 
 
