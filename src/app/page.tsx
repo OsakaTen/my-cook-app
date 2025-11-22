@@ -134,7 +134,7 @@ const App: React.FC = () => {
                   <li key={item.title}>
                     <Link
                       href={item.href}
-                      className="text-md font-medium hover:text-[#58a359] transition-colors"
+                      className="text-md font-medium hover:text-[#4A7C59] transition-colors"
                     >
                       {item.title}
                     </Link>
@@ -146,7 +146,7 @@ const App: React.FC = () => {
                 <li>
                   <Link
                     href="/auth/signup"
-                    className="inline-block text-gray-700 hover:text-blue-500 hover:underline transition-colors"
+                    className="text-md  hover:text-[#4A7C59] transition-colors"
                   >
                     新規登録
                   </Link>
@@ -154,7 +154,7 @@ const App: React.FC = () => {
                 <li>
                   <Link
                     href="/auth/login"
-                    className="inline-block text-gray-700 hover:text-blue-500 hover:underline transition-colors"
+                    className="text-md  hover:text-[#4A7C59] transition-colors"
                   >
                     ログイン
                   </Link>

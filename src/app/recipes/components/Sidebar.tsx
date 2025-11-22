@@ -1,34 +1,28 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { ChevronDown } from "lucide-react";
-
-type CuisineType = "japanese" | "western" | "chinese" | "other";
+import { ChevronDown, Filter, X } from "lucide-react";
 
 export type Filters = {
-  ingredients: string[];      // 系統ボタン等（ここでは食カテゴリ）
-  cuisines: CuisineType[];    // 和食/洋食/中華/その他
-  difficulty: string;
+  ingredients: string[];   // カテゴリ名などを1つだけ入れる想定
   cookingTime: string;
   favoritesOnly: boolean;
 };
 
-type Props = {
-  selectedId?: string | null; // カテゴリID（ランキング用）
-  onSelect: (categoryId: string | null) => void;
-  initialFilters?: Filters;
+type SidebarProps = {
+  initialFilters: Filters;
   onApply: (filters: Filters) => void;
-  onReset?: () => void;
+  onReset: () => void;
 };
 
-const categories = [
+const SIDEBAR_CATEGORIES = [
   { id: "10", name: "ご飯もの" },
   { id: "11", name: "パン" },
   { id: "12", name: "麺" },
   { id: "13", name: "魚介" },
   { id: "14", name: "肉" },
   { id: "15", name: "野菜" },
-  { id: "16", name: "卵・大豆" },
+  { id: "16", name: "卵" },
   { id: "17", name: "スープ・汁物" },
   { id: "18", name: "サラダ" },
   { id: "19", name: "お菓子" },
@@ -37,210 +31,219 @@ const categories = [
   { id: "22", name: "その他" },
 ];
 
-export default function Sidebar({
-  selectedId = null,
-  onSelect,
+const COOKING_TIMES = [
+  "～5分",
+  "5分～15分",
+  "15分～30分",
+  "30分～45分",
+  "45分～60分",
+  "それ以上",
+];
+
+const Sidebar: React.FC<SidebarProps> = ({
   initialFilters,
   onApply,
   onReset,
-}: Props) {
+}) => {
+  const [isOpen, setIsOpen] = useState(false); // モバイル用サイドバー開閉
+
   const [ingredients, setIngredients] = useState<string[]>(
-    initialFilters?.ingredients ?? [],
-  );
-  const [cuisines, setCuisines] = useState<CuisineType[]>(
-    initialFilters?.cuisines ?? [],
-  );
-  const [difficulty, setDifficulty] = useState(
-    initialFilters?.difficulty ?? "",
+    initialFilters.ingredients ?? []
   );
   const [cookingTime, setCookingTime] = useState(
-    initialFilters?.cookingTime ?? "",
+    initialFilters.cookingTime ?? ""
   );
   const [favoritesOnly, setFavoritesOnly] = useState(
-    initialFilters?.favoritesOnly ?? false,
+    initialFilters.favoritesOnly ?? false
   );
 
-  // cuisine checkbox toggle
-  const toggleCuisine = (key: CuisineType) => {
-    setCuisines((prev) =>
-      prev.includes(key)
-        ? prev.filter((p) => p !== key)
-        : [...prev, key],
-    );
-  };
+  // ボタンの選択状態表示用（カテゴリ名で管理）
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(
+    initialFilters.ingredients?.[0] ?? null
+  );
+
+  useEffect(() => {
+    if (initialFilters) {
+      setIngredients(initialFilters.ingredients ?? []);
+      setCookingTime(initialFilters.cookingTime ?? "");
+      setFavoritesOnly(initialFilters.favoritesOnly ?? false);
+      setSelectedCategory(initialFilters.ingredients?.[0] ?? null);
+    }
+  }, [initialFilters]);
 
   const handleApply = () => {
     onApply({
       ingredients,
-      cuisines,
-      difficulty,
       cookingTime,
       favoritesOnly,
     });
+    setIsOpen(false);
   };
 
   const handleReset = () => {
     setIngredients([]);
-    setCuisines([]);
-    setDifficulty("");
     setCookingTime("");
     setFavoritesOnly(false);
-    if (onReset) onReset();
+    setSelectedCategory(null);
+    onReset();
+    setIsOpen(false);
   };
 
-  useEffect(() => {
-    // 初期フィルタが渡される可能性があるので反映
-    if (initialFilters) {
-      setIngredients(initialFilters.ingredients ?? []);
-      setCuisines(initialFilters.cuisines ?? []);
-      setDifficulty(initialFilters.difficulty ?? "");
-      setCookingTime(initialFilters.cookingTime ?? "");
-      setFavoritesOnly(initialFilters.favoritesOnly ?? false);
-    }
-  }, [initialFilters]);
-
   return (
-    <aside className="hide-scrollbar sticky top-[65px] h-[calc(100vh-65px)] w-72 flex-shrink-0 border-r border-[#d1e6d9] overflow-y-auto bg-white p-6 hidden lg:flex flex-col gap-6">
-      {/* 材料 / 系列ボタン群（ここにカテゴリ選択機能を統合） */}
-      <details className="flex flex-col border-t border-[#d1e6d9] py-2 group" open>
-        <summary className="flex cursor-pointer items-center justify-between gap-6 py-2">
-          <p className="text-sm font-medium">カテゴリー</p>
-          <ChevronDown className="w-5 h-5 group-open:rotate-180 transition-transform" />
-        </summary>
+    <>
+      {/* モバイル用 トグルボタン */}
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="md:hidden fixed bottom-6 left-6 z-40 bg-[#2D2D2D] text-white p-4 rounded-full shadow-xl hover:bg-[#4A7C59] transition-colors flex items-center gap-2"
+      >
+        <Filter className="w-5 h-5" />
+        <span className="text-xs font-bold pr-1">絞り込み</span>
+      </button>
 
-        <div className="pl-2 pt-2 space-y-4">
-          {/* カテゴリ選択 */}
-          <div>
-            <div className="flex flex-wrap gap-2">
-              {/* 総合ボタン */}
-              <button
-                onClick={() => onSelect(null)}
-                className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${selectedId === null
-                    ? "bg-green-200 text-green-800 font-semibold"
-                    : "bg-[#f6f8f7] hover:bg-green-50 border border-[#d1e6d9]"
-                  }`}
-              >
-                総合
-              </button>
+      {/* サイドバー本体 */}
+      <aside
+        className={`
+        hide-scrollbar fixed md:sticky top-0 left-0 h-screen w-80 bg-white border-r border-gray-100 
+        z-40 transform transition-transform duration-300 ease-in-out pt-12 pb-10 px-6 overflow-y-auto flex-shrink-0
+        ${isOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full md:translate-x-0 md:shadow-none"}
+      `}
+      >
+        {/* モバイル時のヘッダー */}
+        <div className="flex items-center justify-between md:hidden mb-6">
+          <h2 className="font-serif text-xl font-bold text-[#2D2D2D]">
+            絞り込み検索
+          </h2>
+          <button
+            onClick={() => setIsOpen(false)}
+            className="p-2 hover:bg-gray-100 rounded-full"
+          >
+            <X className="w-6 h-6 text-gray-500" />
+          </button>
+        </div>
 
-              {/* カテゴリボタン */}
-              {categories.map((c) => {
-                const active = selectedId === c.id;
-                return (
-                  <button
-                    key={c.id}
-                    onClick={() => onSelect(c.id)}
-                    className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${active
-                        ? "bg-green-200 text-green-800 font-semibold"
-                        : "bg-[#f6f8f7] hover:bg-green-50 border border-[#d1e6d9]"
+        <div className="flex flex-col gap-6">
+          {/* カテゴリー */}
+          <details className="group border-b border-gray-100 pb-4" open>
+            <summary className="flex cursor-pointer items-center justify-between list-none py-2 select-none group-hover:text-[#4A7C59] transition-colors">
+              <span className="text-sm font-bold text-[#2D2D2D] group-hover:text-[#4A7C59]">
+                カテゴリー
+              </span>
+              <ChevronDown className="w-4 h-4 text-gray-400 group-open:rotate-180 transition-transform duration-200" />
+            </summary>
+
+            <div className="pt-3 animate-in slide-in-from-top-1 duration-200">
+              <div className="flex flex-wrap gap-2">
+                {SIDEBAR_CATEGORIES.map((c) => {
+                  const active = selectedCategory === c.name;
+                  return (
+                    <button
+                      key={c.id}
+                      onClick={() => {
+                        // name ベースで 1 つだけ選択
+                        setSelectedCategory(c.name);
+                        setIngredients([c.name]);
+                      }}
+                      className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all duration-200 border ${
+                        active
+                          ? "bg-[#4A7C59] text-white border-[#4A7C59] shadow-sm"
+                          : "bg-[#F5F5F5] text-gray-600 border-transparent hover:bg-gray-200"
                       }`}
-                  >
-                    {c.name}
-                  </button>
-                );
-              })}
+                    >
+                      {c.name}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
-          </div>
-        </div>
-      </details>
+          </details>
 
-      {/* 料理系統チェックボックス */}
-      <details className="flex flex-col border-t border-[#d1e6d9] py-2 group" open>
-        <summary className="flex cursor-pointer items-center justify-between gap-6 py-2">
-          <p className="text-sm font-medium">調理時間</p>
-          <ChevronDown className="w-5 h-5 group-open:rotate-180 transition-transform" />
-        </summary>
-        <div className="pl-2 pt-2">
-          {["～5分", "5分～15分", "15分～30分","30分～45分","45分～60分","それ以上"].map((time) => (
-            <label
-              key={time}
-              className="flex gap-x-3 py-2 items-center cursor-pointer"
+          {/* 調理時間 */}
+          <details className="group border-b border-gray-100 pb-4" open>
+            <summary className="flex cursor-pointer items-center justify-between list-none py-2 select-none group-hover:text-[#4A7C59] transition-colors">
+              <span className="text-sm font-bold text-[#2D2D2D] group-hover:text-[#4A7C59]">
+                調理時間
+              </span>
+              <ChevronDown className="w-4 h-4 text-gray-400 group-open:rotate-180 transition-transform duration-200" />
+            </summary>
+            <div className="pt-3 space-y-1 animate-in slide-in-from-top-1 duration-200">
+              {COOKING_TIMES.map((time) => (
+                <label
+                  key={time}
+                  className="flex items-center gap-3 p-2 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors group/label"
+                >
+                  <div className="relative flex items-center justify-center">
+                    <input
+                      type="radio"
+                      name="cooking_time"
+                      checked={cookingTime === time}
+                      onChange={() => setCookingTime(time)}
+                      className="peer appearance-none w-4 h-4 border-2 border-gray-300 rounded-full checked:border-[#4A7C59] checked:bg-[#4A7C59] transition-all"
+                    />
+                    <div className="absolute w-1.5 h-1.5 bg-white rounded-full opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none" />
+                  </div>
+                  <span
+                    className={`text-sm font-medium transition-colors ${
+                      cookingTime === time
+                        ? "text-[#4A7C59] font-bold"
+                        : "text-gray-600"
+                    }`}
+                  >
+                    {time}
+                  </span>
+                </label>
+              ))}
+            </div>
+          </details>
+
+          {/* お気に入りトグル */}
+          <div className="flex items-center justify-between py-2 border-b border-gray-100 pb-6">
+            <span className="text-sm font-bold text-[#2D2D2D]">
+              お気に入りのみ
+            </span>
+            <button
+              onClick={() => setFavoritesOnly(!favoritesOnly)}
+              className={`relative w-11 h-6 rounded-full transition-colors duration-300 focus:outline-none shadow-inner ${
+                favoritesOnly ? "bg-[#4A7C59]" : "bg-gray-200"
+              }`}
             >
-              <input
-                type="radio"
-                name="cooking_time"
-                checked={cookingTime === time}
-                onChange={() => setCookingTime(time)}
-                className="h-5 w-5 border-2 border-[#d1e6d9] text-[#4CAF50] focus:ring-0 focus:ring-offset-0"
+              <span
+                className={`absolute top-0.5 left-0.5 bg-white w-5 h-5 rounded-full shadow-sm transition-transform duration-300 ${
+                  favoritesOnly ? "translate-x-5" : "translate-x-0"
+                }`}
               />
-              <p className="text-sm">{time}</p>
-            </label>
-          ))}
-        </div>
-      </details>
+            </button>
+          </div>
 
-      {/* 難易度 */}
-      <details className="flex flex-col border-t border-[#d1e6d9] py-2 group" open>
-        <summary className="flex cursor-pointer items-center justify-between gap-6 py-2">
-          <p className="text-sm font-medium">費用</p>
-          <ChevronDown className="w-5 h-5 group-open:rotate-180 transition-transform" />
-        </summary>
-        <div className="pl-2 pt-2">
-          {["簡単", "普通", "難しい"].map((level) => (
-            <label
-              key={level}
-              className="flex gap-x-3 py-2 items-center cursor-pointer"
+          {/* アクションボタン */}
+          <div className="mt-auto pt-2 space-y-3">
+            <button
+              onClick={handleApply}
+              className="w-full py-3 rounded-xl bg-[#2D2D2D] text-white text-sm font-bold shadow-lg hover:bg-[#4A7C59] hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-center gap-2"
             >
-              <input
-                type="radio"
-                name="difficulty"
-                checked={difficulty === level}
-                onChange={() => setDifficulty(level)}
-                className="h-5 w-5 border-2 border-[#d1e6d9] text-[#4CAF50] focus:ring-0 focus:ring-offset-0"
-              />
-              <p className="text-sm">{level}</p>
-            </label>
-          ))}
+              <Filter className="w-4 h-4" />
+              条件で絞り込む
+            </button>
+            <button
+              onClick={handleReset}
+              className="w-full py-3 rounded-xl bg-white border border-gray-200 text-gray-600 text-sm font-bold hover:bg-gray-50 hover:text-[#2D2D2D] transition-all duration-300"
+            >
+              リセット
+            </button>
+          </div>
         </div>
-      </details>
+      </aside>
 
-      {/* お気に入りトグル */}
-      <details className="flex flex-col border-t border-[#d1e6d9] py-2 group" open>
-        <summary className="flex cursor-pointer items-center justify-between gap-6 py-2">
-          <p className="text-sm font-medium">お気に入り</p>
-          <div
-            onClick={(e) => {
-              e.stopPropagation();
-              setFavoritesOnly((s) => !s);
-            }}
-            className={`toggle ${favoritesOnly ? "on" : ""}`}
-          >
-            <span className="circle" />
-          </div>
-        </summary>
-      </details>
-
-      {/* 自分の冷蔵庫から（今は favoritesOnly と同じ state を使用） */}
-      <details className="flex flex-col border-t border-[#d1e6d9] py-2 group" open>
-        <summary className="flex cursor-pointer items-center justify-between gap-6 py-2">
-          <p className="text-sm font-medium">自分の冷蔵庫から</p>
-          <div
-            onClick={(e) => {
-              e.stopPropagation();
-              setRefrigeratorOnly((s) => !s);
-            }}
-            className={`toggle ${favoritesOnly ? "on" : ""}`}
-          >
-            <span className="circle" />
-          </div>
-        </summary>
-      </details>
-
-      {/* ボタン群 */}
-      <div className="mt-auto flex flex-col gap-2">
-        <button
-          onClick={handleApply}
-          className="w-full h-11 px-6 rounded-lg bg-[#4CAF50] text-white text-sm font-bold hover:bg-[#45a049] transition-colors"
-        >
-          絞り込み
-        </button>
-        <button
-          onClick={handleReset}
-          className="w-full h-11 px-6 rounded-lg bg-transparent border border-[#d1e6d9] hover:bg-[#f6f8f7] text-sm font-medium transition-colors"
-        >
-          リセット
-        </button>
-      </div>
-    </aside>
+      {/* モバイル用オーバーレイ */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-black/20 backdrop-blur-sm z-30 md:hidden"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
+    </>
   );
-}
+};
+
+export default Sidebar;
+
+

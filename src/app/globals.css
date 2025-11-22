@@ -8,19 +8,12 @@ body::-webkit-scrollbar {
 }
 
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Zen Kaku Gothic New', sans-serif;
   background: white;
   margin: 0;
   color: #222;
   line-height: 1.5;
 }
-
-/* input {
-  padding: 0.5rem;
-  border-radius: .5rem;
-  font-size: 1.5rem;
-  border: 1px solid #d1d5db;
-} */
 
 select {
   padding: .5rem;
@@ -30,6 +23,29 @@ select {
   border: 1px solid #d1d5db;
 }
 
+h1,
+h2,
+h3,
+.font-serif {
+  font-family: 'Zen Old Mincho', serif;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+details > summary {
+  list-style: none;
+}
+
+details > summary::-webkit-details-marker {
+  display: none;
+}
 
 
 .form-group {
