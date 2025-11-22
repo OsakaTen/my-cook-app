@@ -4,13 +4,13 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { Menu, Leaf, Facebook, Instagram, Linkedin, Youtube } from 'lucide-react';
-import Loading from "@/components/Loading";
 import { createClient } from "@/lib/supabase/client";
 import type { User } from "@supabase/supabase-js";
 import "./globals.css";
 import { useRouter } from 'next/navigation';
 import { motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
+import Header from "@/components/Header";
 
 interface NavItem {
   title: string;
@@ -23,7 +23,6 @@ type FaqItem = {
 };
 
 const App: React.FC = () => {
-  const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<User | null>(null);
   const supabase = createClient();
   const [open, setOpen] = useState(false);
@@ -37,7 +36,6 @@ const App: React.FC = () => {
         data: { user },
       } = await supabase.auth.getUser();
       setUser(user);
-      setLoading(false);
     };
 
     checkUser();
@@ -121,82 +119,8 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen bg-white text-black select-none">
       {/* ===== ナビゲーション & ヒーロー ===== */}
-      <header className=" flex items-center justify-between border-b border-[#d1e6d9] bg-white backdrop-blur-sm px-6 md:px-10 py-4">
-        <div className="flex items-center gap-4">
-          <Leaf className="text-[#4CAF50] w-8 h-8" />
-          <h2 className="text-lg font-bold">i-Stock</h2>
-        </div>
-        <div className="hidden md:flex items-center gap-9">
-          <ul className="flex list-none gap-9">
-            {user ? (
-              <>
-                {navItems.map((item) => (
-                  <li key={item.title}>
-                    <Link
-                      href={item.href}
-                      className="text-md font-medium hover:text-[#4A7C59] transition-colors"
-                    >
-                      {item.title}
-                    </Link>
-                  </li>
-                ))}
-              </>
-            ) : (
-              <>
-                <li>
-                  <Link
-                    href="/auth/signup"
-                    className="text-md  hover:text-[#4A7C59] transition-colors"
-                  >
-                    新規登録
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/auth/login"
-                    className="text-md  hover:text-[#4A7C59] transition-colors"
-                  >
-                    ログイン
-                  </Link>
-                </li>
-              </>
-            )}
-          </ul>
-        </div>
-        <div className="relative flex items-center gap-4">
-          {/* プロフィールアイコン（クリックでメニュー表示） */}
-          <div className="relative">
-            <button
-              className="w-10 h-10"
-              onClick={() => setOpen(!open)}
-            >
-              <Menu className="w-5 h-5" />
-            </button>
-
-            {/* ↓ ドロップダウンメニュー部分 */}
-            {open && (
-              <div className="absolute right-0 mt-2 w-32 bg-white border border-gray-200 rounded-lg shadow-md">
-                <ul className="py-1 text-sm text-gray-700">
-                  <li>
-                    <button className="block w-full text-left px-4 py-2 hover:bg-gray-100">
-                      編集
-                    </button>
-                  </li>
-                  <li>
-                    <button
-                      onClick={handleLogout}
-                      className="block w-full text-left text-red-600 px-4 py-2 hover:bg-gray-100">
-                      ログアウト
-                    </button>
-                  </li>
-                </ul>
-              </div>
-            )}
-          </div>
-        </div>
-      </header>
-
-      <section className="py-20 ">
+      <Header />
+      <section className="py-40 ">
         <div className="max-w-6xl mx-auto px-4">
           <div className="grid md:grid-cols-2 gap-10 items-center">
 
