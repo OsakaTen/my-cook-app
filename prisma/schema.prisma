@@ -62,7 +62,6 @@ model FoodItem {
   quantity   String // "2個" "500g" など
   expiryDate DateTime
   category   FoodCategory
-  status     FoodStatus
   userId     String
   user       User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt  DateTime     @default(now())

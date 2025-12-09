@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Menu, Leaf } from 'lucide-react';
+import { Menu, Refrigerator } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 import type { User } from '@supabase/supabase-js';
@@ -53,80 +53,84 @@ const Header: React.FC = () => {
   };
 
   return (
-    <header className="sticky top-0 z-10 flex items-center justify-between border-b border-[#d1e6d9] bg-white/80 backdrop-blur-sm px-6 md:px-10 py-3">
-      <div className="flex items-center gap-4">
-        <Leaf className="text-[#4CAF50] w-8 h-8" />
-        <h2 className="text-lg font-bold">i-Stock</h2>
-      </div>
-      <div className="hidden md:flex items-center gap-9">
-        <ul className="flex list-none gap-9">
-          {user ? (
-            <>
-              {navItems.map((item) => (
-                <li key={item.title}>
+    <header className="fixed w-full top-0 flex items-center justify-between bg-[#FCFCFC]/90 backdrop-blur-md z-20 transition-all duration-300 border-b border-gray-100 px-6 md:px-10 py-3">
+        <div className="flex items-center gap-3">
+          <div className="bg-[#2D2D2D] text-white p-2 rounded-xl">
+            <Refrigerator className="w-5 h-5" />
+          </div>
+          <div>
+            <h1 className="text-xl font-serif font-bold tracking-tight text-[#2D2D2D]">Pantry Note</h1>
+          </div>
+        </div>
+        <div className="hidden md:flex items-center gap-9 font-serif">
+          <ul className="flex list-none gap-9">
+            {user ? (
+              <>
+                {navItems.map((item) => (
+                  <li key={item.title}>
+                    <Link
+                      href={item.href}
+                      className="text-md  hover:text-[#4A7C59] transition-colors"
+                    >
+                      {item.title}
+                    </Link>
+                  </li>
+                ))}
+              </>
+            ) : (
+              <>
+                <li>
                   <Link
-                    href={item.href}
-                    className="text-md font-medium hover:text-[#4CAF50] transition-colors"
+                    href="/auth/signup"
+                    className="text-md  hover:text-[#4A7C59] transition-colors"
                   >
-                    {item.title}
+                    新規登録
                   </Link>
                 </li>
-              ))}
-            </>
-          ) : (
-            <>
-              <li>
-                <Link
-                  href="/auth/signup"
-                  className="inline-block text-gray-700 hover:text-blue-500 hover:underline transition-colors"
-                >
-                  新規登録
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/auth/login"
-                  className="inline-block text-gray-700 hover:text-blue-500 hover:underline transition-colors"
-                >
-                  ログイン
-                </Link>
-              </li>
-            </>
-          )}
-        </ul>
-      </div>
-      <div className="relative flex items-center gap-4">
-        {/* プロフィールアイコン（クリックでメニュー表示） */}
-        <div className="relative">
-          <button 
-            className="w-10 h-10"
-            onClick={() => setOpen(!open)}
-          >
-            <Menu className="w-5 h-5" />
-          </button>
-
-          {/* ↓ ドロップダウンメニュー部分 */}
-          {open && (
-            <div className="absolute right-0 mt-2 w-32 bg-white border border-gray-200 rounded-lg shadow-md">
-              <ul className="py-1 text-sm text-gray-700">
                 <li>
-                  <button className="block w-full text-left px-4 py-2 hover:bg-gray-100">
-                    編集
-                  </button>
+                  <Link
+                    href="/auth/login"
+                    className="text-md  hover:text-[#4A7C59] transition-colors"
+                  >
+                    ログイン
+                  </Link>
                 </li>
-                <li>
-                  <button
-                    onClick={handleLogout}
-                    className="block w-full text-left text-red-600 px-4 py-2 hover:bg-gray-100">
-                    ログアウト
-                  </button>
-                </li>
-              </ul>
-            </div>
-          )}
+              </>
+            )}
+          </ul>
         </div>
-      </div>
-    </header >
+        <div className="relative flex items-center gap-4">
+          {/* プロフィールアイコン（クリックでメニュー表示） */}
+          <div className="relative">
+            <button
+              className="w-10 h-10"
+              onClick={() => setOpen(!open)}
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+
+            {/* ↓ ドロップダウンメニュー部分 */}
+            {open && (
+              <div className="absolute right-0 mt-2 w-32 bg-white border border-gray-200 rounded-lg">
+                <ul className="py-1 text-sm text-gray-700">
+                  <li>
+                    <button className="block w-full text-left px-4 py-2 hover:bg-gray-100">
+                      編集
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      onClick={handleLogout}
+                      className="block w-full text-left text-red-600 px-4 py-2 hover:bg-gray-100">
+                      ログアウト
+                    </button>
+                  </li>
+                </ul>
+              </div>
+            )}
+          </div>
+        </div>
+      </header>
   );
 }
 
