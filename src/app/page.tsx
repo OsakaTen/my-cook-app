@@ -121,7 +121,7 @@ const App: React.FC = () => {
       {/* ===== ナビゲーション & ヒーロー ===== */}
       <Header />
       <section className="py-40 ">
-        <div className="max-w-6xl mx-auto px-4">
+        <div className="max-w-7xl mx-auto px-4">
           <div className="grid md:grid-cols-2 gap-10 items-center">
 
             <motion.div
@@ -203,14 +203,14 @@ const App: React.FC = () => {
       {/* ===== サービス特徴 ===== */}
       <motion.section
         id="features"
-        className="bg-[#f5fbf7] text-slate-900 py-16"
+        className="bg-white text-slate-900 pt-20 pb-50 "
         initial={{ opacity: 0, scale: 0.98 }}
         whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: true, amount: 0.2 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
       >
-        <div className="max-w-6xl mx-auto px-4 lg:px-0">
-          <div className="text-center mb-10">
+        <div className="max-w-7xl mx-auto px-4 lg:px-0">
+          <div className="text-center mb-20">
             <h2 className="text-2xl md:text-3xl font-semibold mb-3">
               料理をもっと簡単に、楽しく
             </h2>
@@ -231,10 +231,10 @@ const App: React.FC = () => {
                 FEATURE 01
               </p>
               <h3 className="text-base font-semibold text-slate-900">
-                冷蔵庫の中身からレシピ提案
+                Smart Management（スマートな管理）
               </h3>
               <p className="text-sm text-slate-600 leading-relaxed">
-                撮影した食材をAIが自動認識。冷蔵庫にあるもので今日の献立を提案します。
+                冷蔵庫の中身をスマホ一つで「見える化」します。購入した食材の登録から賞味期限のチェックまで、ストレスのない操作性を実現。期限が近づくと通知が届くので、管理の不安から解放されます。
               </p>
             </motion.article>
 
@@ -249,10 +249,10 @@ const App: React.FC = () => {
                 FEATURE 02
               </p>
               <h3 className="text-base font-semibold text-slate-900">
-                レシピの難易度・時間で絞り込み
+                Recipe Suggestion（レシピ提案）
               </h3>
               <p className="text-sm text-slate-600 leading-relaxed">
-                「10分以内」「初心者向け」など、気分や時間に合わせてレシピをフィルタリング。
+                毎日の献立に悩む時間はもう終わりです。冷蔵庫にある食材だけを使って作れる最適なメニューをアプリが瞬時に提案。余り物が美味しい料理に変わる、新しい料理体験をお届けします。
               </p>
             </motion.article>
 
@@ -267,10 +267,10 @@ const App: React.FC = () => {
                 FEATURE 03
               </p>
               <h3 className="text-base font-semibold text-slate-900">
-                買い物リストを自動生成
+                Eco & Economy（エコ＆節約）
               </h3>
               <p className="text-sm text-slate-600 leading-relaxed">
-                足りない食材だけを自動でリスト化。スーパーでの買い忘れを防ぎます。
+                在庫を正確に把握することで、重複買いや廃棄ロスを自然に削減。地球環境に優しいだけでなく、食費の節約にもつながります。賢い食材管理で、心にも家計にも余裕のあるライフスタイルを。
               </p>
             </motion.article>
           </div>
@@ -280,7 +280,7 @@ const App: React.FC = () => {
       {/* ===== 記事カード ===== */}
       <motion.section
         id="articles"
-        className="bg-slate-50 text-slate-900 py-16"
+        className="bg-white text-slate-900 py-16"
         initial={{ opacity: 0, y: 16 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.25 }}

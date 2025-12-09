@@ -476,7 +476,6 @@ export default function GroupPage() {
             </div>
         </div>
       )}
-
     </div>
   );
 }

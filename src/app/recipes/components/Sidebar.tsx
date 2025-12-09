@@ -15,20 +15,50 @@ type SidebarProps = {
   onReset: () => void;
 };
 
-const SIDEBAR_CATEGORIES = [
-  { id: "10", name: "ご飯もの" },
-  { id: "11", name: "パン" },
-  { id: "12", name: "麺" },
-  { id: "13", name: "魚介" },
-  { id: "14", name: "肉" },
-  { id: "15", name: "野菜" },
-  { id: "16", name: "卵" },
-  { id: "17", name: "スープ・汁物" },
-  { id: "18", name: "サラダ" },
-  { id: "19", name: "お菓子" },
-  { id: "20", name: "パーティ料理" },
-  { id: "21", name: "飲み物" },
-  { id: "22", name: "その他" },
+// 楽天レシピAPIのカテゴリID（例）を意識したデータ構造
+const INGREDIENT_CATEGORIES = [
+  {
+    id: 'meat',
+    label: '肉類',
+    children: [
+      { name: '牛肉', categoryId: '10' },
+      { name: '豚肉', categoryId: '11' },
+      { name: '鶏肉', categoryId: '12' },
+      { name: 'ひき肉', categoryId: '39' },
+      { name: 'ハム・ソーセージ', categoryId: '13' },
+    ],
+  },
+  {
+    id: 'vegetable',
+    label: '野菜',
+    children: [
+      { name: '根菜類', categoryId: '100' }, // 大根・人参など
+      { name: '葉物野菜', categoryId: '101' }, // キャベツなど
+      { name: 'トマト・ナス', categoryId: '102' },
+      { name: 'きのこ類', categoryId: '103' },
+      { name: '香味野菜', categoryId: '104' },
+    ],
+  },
+  {
+    id: 'fish',
+    label: '魚介・海藻',
+    children: [
+      { name: '鮭・サーモン', categoryId: '20' },
+      { name: '青魚（アジ・サバ）', categoryId: '21' },
+      { name: 'エビ・カニ', categoryId: '22' },
+      { name: '貝類', categoryId: '23' },
+    ],
+  },
+  {
+    id: 'other',
+    label: '卵・豆・乳製品',
+    children: [
+      { name: '卵', categoryId: '30' },
+      { name: '豆腐', categoryId: '31' },
+      { name: '納豆', categoryId: '32' },
+      { name: '牛乳・チーズ', categoryId: '33' },
+    ],
+  },
 ];
 
 const COOKING_TIMES = [
@@ -53,9 +83,8 @@ const Sidebar: React.FC<SidebarProps> = ({
   const [cookingTime, setCookingTime] = useState(
     initialFilters.cookingTime ?? ""
   );
-  const [favoritesOnly, setFavoritesOnly] = useState(
-    initialFilters.favoritesOnly ?? false
-  );
+  const [favoritesOnly, setFavoritesOnly] = useState(initialFilters.favoritesOnly ?? false);
+
 
   // ボタンの選択状態表示用（カテゴリ名で管理）
   const [selectedCategory, setSelectedCategory] = useState<string | null>(
@@ -123,42 +152,69 @@ const Sidebar: React.FC<SidebarProps> = ({
 
         <div className="flex flex-col gap-6">
           {/* カテゴリー */}
-          <details className="group border-b border-gray-100 pb-4" open>
-            <summary className="flex cursor-pointer items-center justify-between list-none py-2 select-none group-hover:text-[#4A7C59] transition-colors">
-              <span className="text-sm font-bold text-[#2D2D2D] group-hover:text-[#4A7C59]">
-                カテゴリー
-              </span>
-              <ChevronDown className="w-4 h-4 text-gray-400 group-open:rotate-180 transition-transform duration-200" />
-            </summary>
+      
+          <div className="flex flex-col gap-6">
+            <details className="group border-b border-gray-100 pb-4" open>
+              <summary className="flex cursor-pointer items-center justify-between list-none py-2 select-none group-hover:text-[#4A7C59] transition-colors">
+                <span className="text-sm font-bold text-[#2D2D2D] group-hover:text-[#4A7C59]">
+                  カテゴリー
+                </span>
+                <ChevronDown className="w-4 h-4 text-gray-400 group-open:rotate-180 transition-transform duration-200" />
+              </summary>
 
-            <div className="pt-3 animate-in slide-in-from-top-1 duration-200">
-              <div className="flex flex-wrap gap-2">
-                {SIDEBAR_CATEGORIES.map((c) => {
-                  const active = selectedCategory === c.name;
-                  return (
-                    <button
-                      key={c.id}
-                      onClick={() => {
-                        // name ベースで 1 つだけ選択
-                        setSelectedCategory(c.name);
-                        setIngredients([c.name]);
-                      }}
-                      className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all duration-200 border ${
-                        active
-                          ? "bg-[#4A7C59] text-white border-[#4A7C59] shadow-sm"
-                          : "bg-[#F5F5F5] text-gray-600 border-transparent hover:bg-gray-200"
-                      }`}
-                    >
-                      {c.name}
-                    </button>
-                  );
-                })}
+              <div className="pt-3 animate-in slide-in-from-top-1 duration-200">
+
+                {INGREDIENT_CATEGORIES.map((parentCategory) => (
+                  <div key={parentCategory.id} className="mb-2 last:mb-0">
+
+                    {/* 内側の details (group/inner をユニークにする必要はないため、そのまま使用) */}
+                    <details className="group/inner pb-2" open>
+
+                      <summary className="flex cursor-pointer items-center justify-between gap-5 mb-2 list-none py-2 select-none border-b border-dashed border-gray-100 group-hover/inner:text-[#4A7C59] transition-colors">
+                        <span className="text-sm font-bold text-[#2D2D2D] group-hover/inner:text-[#4A7C59]">
+                          {parentCategory.label}
+                        </span>
+
+                        <ChevronDown
+                          // group-open/inner で、この内側のdetailsの状態を監視
+                          className="w-4 h-4 text-gray-400 transition-transform duration-200 transform group-open/inner:rotate-180"
+                        />
+                      </summary>
+
+                      <div className="flex flex-wrap gap-2 pt-2">
+                        {parentCategory.children.map((child) => {
+                          const active = selectedCategory === child.name;
+
+                          return (
+                            <button
+                              key={child.categoryId}
+                              onClick={() => {
+                                // 選択状態の更新ロジック
+                                setSelectedCategory(child.name);
+                                // API検索用に配列へ入れる（必要に応じて変更してください）
+                                setIngredients([child.name]);
+                              }}
+                              className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all duration-200 border ${active
+                                  ? "bg-[#4A7C59] text-white border-[#4A7C59] shadow-sm"
+                                  : "bg-[#F5F5F5] text-gray-600 border-transparent hover:bg-gray-200"
+                                }`}
+                            >
+                              {child.name}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </details>
+                  </div>
+                ))}
+                {/* --- 修正部分終了 --- */}
+
               </div>
-            </div>
-          </details>
+            </details>
+          </div>
 
           {/* 調理時間 */}
-          <details className="group border-b border-gray-100 pb-4" open>
+          <details className="group border-b border-gray-100 pb-4" open >
             <summary className="flex cursor-pointer items-center justify-between list-none py-2 select-none group-hover:text-[#4A7C59] transition-colors">
               <span className="text-sm font-bold text-[#2D2D2D] group-hover:text-[#4A7C59]">
                 調理時間
@@ -182,40 +238,37 @@ const Sidebar: React.FC<SidebarProps> = ({
                     <div className="absolute w-1.5 h-1.5 bg-white rounded-full opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none" />
                   </div>
                   <span
-                    className={`text-sm font-medium transition-colors ${
-                      cookingTime === time
-                        ? "text-[#4A7C59] font-bold"
-                        : "text-gray-600"
-                    }`}
+                    className={`text-sm font-medium transition-colors ${cookingTime === time
+                      ? "text-[#4A7C59] font-bold"
+                      : "text-gray-600"
+                      }`}
                   >
                     {time}
                   </span>
                 </label>
               ))}
             </div>
-          </details>
+          </details >
 
           {/* お気に入りトグル */}
-          <div className="flex items-center justify-between py-2 border-b border-gray-100 pb-6">
-            <span className="text-sm font-bold text-[#2D2D2D]">
-              お気に入りのみ
-            </span>
+          <div className="flex items-center justify-between px-1 pb-6" >
+            <span className="text-sm font-bold text-[#2D2D2D]">お気に入りのみ</span>
             <button
               onClick={() => setFavoritesOnly(!favoritesOnly)}
-              className={`relative w-11 h-6 rounded-full transition-colors duration-300 focus:outline-none shadow-inner ${
-                favoritesOnly ? "bg-[#4A7C59]" : "bg-gray-200"
-              }`}
+              className={`relative w-11 h-6 rounded-full transition-colors duration-300 focus:outline-none shadow-inner ${favoritesOnly ? "bg-[#4A7C59]" : "bg-gray-200"
+                }`}
             >
               <span
-                className={`absolute top-0.5 left-0.5 bg-white w-5 h-5 rounded-full shadow-sm transition-transform duration-300 ${
-                  favoritesOnly ? "translate-x-5" : "translate-x-0"
-                }`}
+                className={`absolute top-0.5 left-0.5 bg-white w-5 h-5 rounded-full shadow-sm transition-transform duration-300 `}
+                style={{
+                  transform: favoritesOnly ? "translateX(20px)" : "translateX(0)",
+                }}
               />
             </button>
           </div>
 
           {/* アクションボタン */}
-          <div className="mt-auto pt-2 space-y-3">
+          <div className="mt-auto pt-2 space-y-3" >
             <button
               onClick={handleApply}
               className="w-full py-3 rounded-xl bg-[#2D2D2D] text-white text-sm font-bold shadow-lg hover:bg-[#4A7C59] hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-center gap-2"
@@ -230,16 +283,8 @@ const Sidebar: React.FC<SidebarProps> = ({
               リセット
             </button>
           </div>
-        </div>
-      </aside>
-
-      {/* モバイル用オーバーレイ */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 bg-black/20 backdrop-blur-sm z-30 md:hidden"
-          onClick={() => setIsOpen(false)}
-        />
-      )}
+        </div >
+      </aside >
     </>
   );
 };
