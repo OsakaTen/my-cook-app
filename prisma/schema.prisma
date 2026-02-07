@@ -39,12 +39,17 @@ enum RecipeDifficulty {
   難しい
 }
 
+// レシピのソース（どこから来たレシピか）
+enum RecipeSource {
+  USER      // ユーザーが作成
+  RAKUTEN   // 楽天レシピAPI
+}
+
 model User {
   id          String             @id @default(uuid())
   name        String?
   email       String           @unique
   foodItems   FoodItem[]
-  viewHistory RecipeView[]
   favorites   FavoriteRecipe[]
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @updatedAt
@@ -57,7 +62,6 @@ model FoodItem {
   quantity   String // "2個" "500g" など
   expiryDate DateTime
   category   FoodCategory
-  status     FoodStatus
   userId     String
   user       User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt  DateTime     @default(now())
@@ -69,27 +73,38 @@ model FoodItem {
 
 // レシピテーブル
 model Recipe {
-  id           Int                @id @default(autoincrement())
-  title        String
-  description  String
-  imageUrl     String?
-  cookingTime  Int
-  difficulty   RecipeDifficulty
-  servings     Int
-  instructions String             @db.Text
-  ingredients  RecipeIngredient[]
-  views        RecipeView[]
-  favorites    FavoriteRecipe[]
-  createdAt    DateTime           @default(now())
-  updatedAt    DateTime           @updatedAt
-
-  // 楽天レシピ用のフィールドを追加
-  rakutenRecipeId String?          @unique
-  rakutenRecipeUrl String?
+  id               Int                @id @default(autoincrement())
+  
+  // 基本情報（全レシピ共通）
+  title            String
+  description      String?
+  imageUrl         String?
+  cookingTime      Int?               // 分単位
+  difficulty       RecipeDifficulty?
+  servings         Int?
+  instructions     String?            @db.Text
+  
+  // メタ情報
+  source           RecipeSource       @default(USER)  // レシピの出典
+  externalId       String?            @unique         // 外部ID（楽天の場合はrecipeId）
+  externalUrl      String?                            // 外部URL（楽天の場合はレシピURL）
+  cost             String?                            // "300円前後"
+  categoryId       String?                            // "32-339"（楽天の場合）
+  categoryName     String?                            // "煮魚"
+  
+  // リレーション
+  ingredients      RecipeIngredient[]
+  favorites        FavoriteRecipe[]
+  
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
 
   @@index([title])
-  @@index([rakutenRecipeId])
+  @@index([externalId])
+  @@index([categoryName])
+  @@index([source])
 }
+
 
 // レシピの材料
 model RecipeIngredient {
@@ -105,18 +120,6 @@ model RecipeIngredient {
   @@index([name])
 }
 
-// レシピ閲覧履歴
-model RecipeView {
-  id       Int      @id @default(autoincrement())
-  userId   String
-  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  recipeId Int
-  recipe   Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
-  viewedAt DateTime @default(now())
-
-  @@unique([userId, recipeId, viewedAt])
-  @@index([userId, viewedAt])
-}
 
 // お気に入りレシピ
 model FavoriteRecipe {
@@ -130,3 +133,23 @@ model FavoriteRecipe {
   @@unique([userId, recipeId])
   @@index([userId])
 }
+
+model RecipeCategory {
+  id             String   @id @default(cuid())
+  categoryId     String   @unique
+  categoryName   String
+  categoryUrl    String?
+
+  // 親カテゴリ（親の categoryId を参照する設計）
+  parentCategoryId String?
+  parent           RecipeCategory?  @relation("CategoryHierarchy", fields: [parentCategoryId], references: [categoryId])
+  children         RecipeCategory[] @relation("CategoryHierarchy")
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([categoryName])
+  @@index([parentCategoryId])
+}
+
+

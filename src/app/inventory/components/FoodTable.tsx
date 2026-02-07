@@ -20,18 +20,14 @@ const FoodTable: React.FC<FoodTableProps> = ({ items, onEdit, onDelete }) => {
 
   const handleSave = async (id: number) => {
     if (!editData || !editData.name || !editData.quantity || !editData.expiryDate) return;
+    
+    onEdit(id, {
+      name: editData.name,
+      quantity: editData.quantity,
+      expiryDate: editData.expiryDate,
+      category: editData.category,
+    } as Omit<FoodItem, "id">);
 
-    // 賞味期限に基づいて状態を再計算
-    const today = new Date();
-    const expiry = new Date(editData.expiryDate);
-    const diffDays = Math.ceil((expiry.getTime() - today.getTime()) / (1000 * 3600 * 24));
-
-    let status: FoodStatus;
-    if (diffDays < 0) status = '期限切れ';
-    else if (diffDays <= 3) status = 'まもなく期限切れ';
-    else status = '新鮮';
-
-    onEdit(id, { ...editData, status });
     setEditingId(null);
     setEditData(null);
   };
@@ -119,8 +115,8 @@ const FoodTable: React.FC<FoodTableProps> = ({ items, onEdit, onDelete }) => {
                       item.status === '期限切れ'
                         ? 'text-red-600 font-semibold text-base'
                         : item.status === 'まもなく期限切れ'
-                        ? 'text-orange-600 font-semibold text-base'
-                        : 'text-slate-500 text-xl'
+                          ? 'text-orange-600 font-semibold text-base'
+                          : 'text-slate-500 text-xl'
                     }
                   >
                     {item.expiryDate}

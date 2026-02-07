@@ -6,7 +6,7 @@ export async function POST(request: Request) {
     const { email, password } = await request.json()
     
     const supabase = await createClient()
-    
+    console.log("送信する値:", { email, password });
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,

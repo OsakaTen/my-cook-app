@@ -1,19 +1,18 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/* スクロールバー削除 */
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
+}
+
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Zen Kaku Gothic New', sans-serif;
   background: white;
   margin: 0;
   color: #222;
   line-height: 1.5;
-}
-
-input {
-  padding: 0.5rem;
-  border-radius: .5rem;
-  font-size: 1.5rem;
-  border: 1px solid #d1d5db;
 }
 
 select {
@@ -23,6 +22,31 @@ select {
   color: #c4c8cf;
   border: 1px solid #d1d5db;
 }
+
+h1,
+h2,
+h3,
+.font-serif {
+  font-family: 'Zen Old Mincho', serif;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+details > summary {
+  list-style: none;
+}
+
+details > summary::-webkit-details-marker {
+  display: none;
+}
+
 
 .form-group {
   display: flex;
@@ -54,4 +78,48 @@ select {
   background: #f87171;
   color: white;
 }
+
+/* スクロールバーを非表示にする */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;  /* IE・Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+
+
+/* recipeのトグルスイッチ本体 */
+.toggle {
+  position: relative;
+  width: 48px;
+  height: 24px;
+  background-color: #d1d5db; /* グレー */
+  border-radius: 9999px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+/* 丸部分 */
+.toggle .circle {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  background-color: white;
+  border-radius: 50%;
+  transition: transform 0.3s ease;
+}
+
+/* ON状態 */
+.toggle.on {
+  background-color: #4caf50; /* 緑 */
+}
+
+.toggle.on .circle {
+  transform: translateX(24px);
+}
+
 

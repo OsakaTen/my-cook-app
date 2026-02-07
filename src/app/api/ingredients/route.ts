@@ -3,6 +3,31 @@ import { prisma } from "@/lib/prisma";
 import { createClient } from "@/lib/supabase/server";
 import { FoodCategory, FoodStatus } from "@prisma/client";
 
+export async function getUserFoodItems(userId: string) {
+  return await prisma.foodItem.findMany({
+    where: { userId },
+    orderBy: { createdAt: "desc" },
+  });
+}
+
+function calcFoodStatus(expiryDate: string | Date): FoodStatus {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const expiry =
+    typeof expiryDate === "string" ? new Date(expiryDate) : expiryDate;
+  expiry.setHours(0, 0, 0, 0);
+
+  const diffDays = Math.ceil(
+    (expiry.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
+  );
+
+  if (diffDays < 0) return "期限切れ";
+  if (diffDays <= 3) return "まもなく期限切れ";
+  return "新鮮";
+}
+
+
 // 食材一覧取得（ログインユーザーのみ）
 export async function GET() {
   try {
@@ -13,11 +38,8 @@ export async function GET() {
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-  
-    const foodItems = await prisma.foodItem.findMany({
-      where: { userId: user.id },
-      orderBy: { createdAt: "desc" },
-    });
+
+    const foodItems = await getUserFoodItems(user.id);
 
     return NextResponse.json(foodItems);
   } catch (error) {
@@ -32,24 +54,59 @@ export async function GET() {
 // 食材追加
 export async function POST(request: Request) {
   try {
-    // 認証チェック
     const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    //  Prisma 側 User を必ず保証
+    await prisma.user.upsert({
+      where: { id: user.id },
+      update: {}, // すでにあれば何もしない
+      create: {
+        id: user.id,
+        email: user.email ?? "",
+      },
+    });
+
     const body = await request.json();
-    console.log("受信データ:", body); // デバッグ
+    console.log("受信データ:", body);
+
+    const { name, quantity, expiryDate, category } = body;
+
+    // 簡単なサーバー側バリデーション（あった方が安全）
+    if (!name?.trim()) {
+      return NextResponse.json(
+        { message: "食材名は必須です" },
+        { status: 400 }
+      );
+    }
+    if (!quantity) {
+      return NextResponse.json(
+        { message: "数量は必須です" },
+        { status: 400 }
+      );
+    }
+    if (!expiryDate) {
+      return NextResponse.json(
+        { message: "賞味期限は必須です" },
+        { status: 400 }
+      );
+    }
+
+    const status = calcFoodStatus(expiryDate);
 
     const foodItem = await prisma.foodItem.create({
       data: {
-        name: body.name,
-        quantity: body.quantity,
-        expiryDate: new Date(body.expiryDate),
-        category: body.category as FoodCategory,
-        status: body.status as FoodStatus,
+        name,
+        quantity,                     // Int 型なら Number(quantity)
+        expiryDate: new Date(expiryDate),
+        category: category as FoodCategory,
+        status,                       // ← body.status ではなくサーバーで決めた値
         userId: user.id,
       },
     });
@@ -57,7 +114,6 @@ export async function POST(request: Request) {
     return NextResponse.json(foodItem);
   } catch (error) {
     console.error("POST /api/food-items error:", error);
-    console.error("エラー詳細:", error);
     return NextResponse.json(
       {
         error: "食材の作成に失敗しました",
@@ -67,3 +123,4 @@ export async function POST(request: Request) {
     );
   }
 }
+

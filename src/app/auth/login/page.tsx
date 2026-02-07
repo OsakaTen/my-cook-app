@@ -1,53 +1,57 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import Link from "next/link";
+import { createClient } from '@/lib/supabase/client'
+import Link from 'next/link'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [message, setMessage] = useState<string | null>(null)
   const router = useRouter()
   const searchParams = useSearchParams()
+  const supabase = createClient()
 
-  useEffect(() => {
-    const msg = searchParams.get('message')
-    if (msg) {
-      setMessage(msg)
-    }
-  }, [searchParams])
+  // デバッグ: Supabase接続確認
+  // const checkConnection = async () => {
+  //   console.log('Supabase URL:', process.env.NEXT_PUBLIC_SUPABASE_URL)
+  //   console.log('Anon Key exists:', !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
+
+  //   const { data, error } = await supabase.auth.getSession()
+  //   console.log('Session check:', { data, error })
+  // }
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     setError(null)
-    setMessage(null)
+
+    console.log('Attempting login with:', { email })
 
     try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
       })
 
-      const data = await response.json()
+      console.log('Login response:', { data, error })
 
-      if (!response.ok) {
-        throw new Error(data.error)
-      }
-
-      router.push('/')
-      router.refresh()
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError(err.message)
+      if (error) {
+        setError(`${error.message} (${error.status})`)
+        console.error('ログイン失敗 詳細:', error)
+        setLoading(false)
       } else {
-        setError('予期せぬエラーが発生しました。')
+        console.log('ログイン成功!')
+        // 元々アクセスしようとしていたページ（redirectedFromに指定されたページ）へ移動
+        const redirectTo = searchParams.get('redirectedFrom') || '/'
+        router.push(redirectTo)
+        router.refresh()
       }
-    } finally {
+    } catch (err) {
+      console.error('Unexpected error:', err)
+      setError('予期しないエラーが発生しました')
       setLoading(false)
     }
   }
@@ -57,19 +61,13 @@ export default function LoginPage() {
       <div className="w-full max-w-sm bg-white p-8 rounded-md border shadow">
         <h2 className="text-2xl font-bold text-center mb-6">ログイン</h2>
 
-        {message && (
-          <div className="bg-green-50 border border-green-200 text-green-600 p-3 rounded-md text-sm mb-4">
-            {message}
-          </div>
-        )}
+        <form onSubmit={handleLogin} className="space-y-6">
+          {error && (
+            <div className="bg-red-50 border border-red-200 text-red-600 p-3 rounded-md text-sm mb-4">
+              {error}
+            </div>
+          )}
 
-        {error && (
-          <div className="bg-red-50 border border-red-200 text-red-600 p-3 rounded-md text-sm mb-4">
-            {error}
-          </div>
-        )}
-
-        <form onSubmit={handleLogin} className="flex flex-col space-y-4">
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700">
               メールアドレス
@@ -107,15 +105,14 @@ export default function LoginPage() {
           >
             {loading ? 'ログイン中...' : 'ログイン'}
           </button>
+
+          <p className="text-center text-sm text-gray-600 mt-4">
+            アカウントをお持ちでないですか？{' '}
+            <Link href="/auth/signup" className="font-medium text-blue-600 hover:text-blue-500">
+              新規登録
+            </Link>
+          </p>
         </form>
-
-        <p className="text-center text-sm text-gray-600 mt-4">
-          アカウントをお持ちでないですか？{' '}
-          <Link href="/auth/signup" className="font-medium text-blue-600 hover:text-blue-500">
-            新規登録
-          </Link>
-
-        </p>
       </div>
     </div>
   )
